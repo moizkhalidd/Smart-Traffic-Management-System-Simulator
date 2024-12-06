@@ -47,6 +47,36 @@ class TrafficGraph
         return nullptr;
     }
 
+    void removeIncomingEdges(string nodeName) 
+    {
+
+        IntersectionNode* current = head;
+        while (current != nullptr) 
+        {
+            EdgeNode* prev = nullptr;
+            EdgeNode* edge = current->edgeList;
+            while (edge != nullptr) 
+            {
+                if (edge->destination == nodeName) 
+                {
+                    if (prev == nullptr) 
+                    {
+                        current->edgeList = edge->next;
+                    } 
+                    else 
+                    {
+                        prev->next = edge->next;
+                    }
+                    delete edge;
+                    break;
+                }
+                prev = edge;
+                edge = edge->next;
+            }
+            current = current->next;
+        }
+    }
+
 public:
 
     TrafficGraph() : head(nullptr) {}
@@ -163,6 +193,41 @@ public:
             }
             prev = edge;
             edge = edge->next;
+        }
+    }
+
+    void removeIntersection(const string& name)
+    {
+        removeIncomingEdges(name); 
+
+        IntersectionNode* prev = nullptr;
+        IntersectionNode* current = head;
+
+        while (current != nullptr) 
+        {
+            if (current->name == name) 
+            {
+                if (prev == nullptr)
+                {
+                    head = current->next;
+                } 
+                else 
+                {
+                    prev->next = current->next;
+                }
+
+                EdgeNode* edge = current->edgeList;
+                while (edge != nullptr) 
+                {
+                    EdgeNode* temp = edge;
+                    edge = edge->next;
+                    delete temp;
+                }
+                delete current;
+                return;
+            }
+            prev = current;
+            current = current->next;
         }
     }
 };
