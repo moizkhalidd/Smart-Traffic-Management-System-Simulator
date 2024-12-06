@@ -136,6 +136,34 @@ public:
                 
               }
     
-    }  
+    } 
+
+    void removeRoad(const string& source, const string& destination) 
+    {
+        IntersectionNode* sourceNode = findIntersection(source);
+        if (sourceNode == nullptr) return;
+
+        EdgeNode* prev = nullptr;
+        EdgeNode* edge = sourceNode->edgeList;
+
+        while (edge != nullptr) 
+        {
+            if (edge->destination == destination) 
+            {
+                if (prev == nullptr)
+                {
+                    sourceNode->edgeList = edge->next;
+                } 
+                else 
+                {
+                    prev->next = edge->next;
+                }
+                delete edge;
+                return;
+            }
+            prev = edge;
+            edge = edge->next;
+        }
+    }
 };
 
