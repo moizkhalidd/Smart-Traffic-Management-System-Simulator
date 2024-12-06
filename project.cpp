@@ -29,6 +29,22 @@ struct IntersectionNode
        next = nullptr;
     }
 };
+struct NodeDistance 
+{
+  string name;
+  int distance;
+  bool visited;
+  
+  NodeDistance()
+  {}
+  
+  NodeDistance(string n, int d)
+  {
+     name= n;
+     distance = d;
+     visited = 0;
+  }
+};
 class TrafficGraph 
 {
     IntersectionNode* head;
