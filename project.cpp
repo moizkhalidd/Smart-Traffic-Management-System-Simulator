@@ -360,6 +360,34 @@ public:
         }
         file.close();
     }
+
+    void loadDisruptions(const string& filename) 
+    {
+        ifstream file(filename);
+        if (!file.is_open()) {
+            cout << "Error: Could not open file " << filename << endl;
+            return;
+        }
+
+        string line;
+        getline(file, line);
+
+
+        string source, destination, status;
+        while (getline(file, line)) 
+        {
+            stringstream ss(line);
+            getline(ss, source, ',');
+            getline(ss, destination, ',');
+            getline(ss, status, ',');
+
+            if (status == "Blocked" || status == "Under Repair" ) 
+            {
+                blockRoad(source, destination);
+            }
+        }
+        file.close();
+    }
     
     
     void shortestPathdijkstra(string start, string end) 
