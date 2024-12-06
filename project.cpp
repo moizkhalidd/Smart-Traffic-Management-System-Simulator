@@ -50,13 +50,15 @@ struct BlockedRoad
 {
     string source;
     string destination;
+    string status;
     BlockedRoad* next;
 
-    BlockedRoad(string s, string d) 
+    BlockedRoad(string s, string d, string stat) 
     { 
       source = s;  
       destination = d;
       next = nullptr;
+      status = stat;
     }
 };
 class TrafficGraph 
@@ -120,7 +122,7 @@ class TrafficGraph
           }
           return -1;
       }
-
+      
       bool isRoadBlocked(string source, string destination) 
       {
         BlockedRoad* current = blockedRoads;
@@ -133,10 +135,13 @@ class TrafficGraph
         }
         return false;
        }
-  
+    
+
 public:
 
+     
     TrafficGraph() : head(nullptr) , blockedRoads(nullptr){}
+
 
     ~TrafficGraph() 
     {
@@ -158,7 +163,7 @@ public:
     }
 
 
-    void addIntersection(const string& name) 
+    void addIntersection(string name) 
     {
         if (findIntersection(name) == nullptr)
         {
@@ -181,7 +186,7 @@ public:
     }
 
 
-    void addRoad(const string& source, const string& destination, int travelTime) 
+    void addRoad(string source,string destination, int travelTime) 
     {
 
               addIntersection(source); 
@@ -218,15 +223,13 @@ public:
                          
                           temp->next = newEdge2;
                           temp = nullptr;
-                          delete temp;
-                
+                          delete temp; 
               }
-    
     }
 
 
 
-    void removeIntersection(const string& name)
+    void removeIntersection(string name)
     {
         removeIncomingEdges(name); 
 
@@ -262,7 +265,7 @@ public:
     }
 
 
-    void removeRoad(const string& source, const string& destination) 
+    void removeRoad(string source, string destination) 
     {
         IntersectionNode* sourceNode = findIntersection(source);
         if (sourceNode == nullptr) return;
@@ -289,8 +292,9 @@ public:
             edge = edge->next;
         }
     }
+    
 
-     void blockRoad(string source, string destination) 
+    void blockRoad(string source, string destination, string status = "Blocked") 
     {
           IntersectionNode* sourceNode = findIntersection(source);
           if (sourceNode == nullptr) 
@@ -315,12 +319,12 @@ public:
       
         if (roadExists) 
         {
-            BlockedRoad* newBlockedRoad = new BlockedRoad(source, destination);
+            BlockedRoad* newBlockedRoad = new BlockedRoad(source, destination, status);
             newBlockedRoad->next = blockedRoads;
             blockedRoads = newBlockedRoad;
 
 
-            newBlockedRoad = new BlockedRoad(destination, source);
+            newBlockedRoad = new BlockedRoad(destination, source, status);
             newBlockedRoad->next = blockedRoads;
             blockedRoads = newBlockedRoad;
         }
@@ -372,6 +376,7 @@ public:
         }
         file.close();
     }
+    
 
     void loadDisruptions(const string& filename) 
     {
@@ -395,7 +400,7 @@ public:
 
             if (status == "Blocked" || status == "Under Repair" ) 
             {
-                blockRoad(source, destination);
+                blockRoad(source, destination, status);
             }
         }
         file.close();
@@ -472,6 +477,39 @@ public:
             }
         }
 
+        int endIndex = getIndex(end, nodes,nodeCount);
+        
+        if (endIndex == -1 || nodes[endIndex].distance == INF) 
+        {
+            cout << "No path from " << start << " to " << end << endl;
+        } 
+        else 
+        {
+            cout << "Shortest path from " << start << " to " << end << " is " << nodes[endIndex].distance << " minutes." << endl;
+            
+            cout << "Path: ";
+            
+            string path[26];
+            int pathIndex = 0;
+            
+            string currentNode = end;
+            
+            while (currentNode != start) 
+            {
+                path[pathIndex++] = currentNode;
+                currentNode = nodes[getIndex(currentNode, nodes, nodeCount)].parent;
+            }
+            path[pathIndex++] = start;
+            
+            for (int i = pathIndex - 1; i >= 0; --i) 
+            {
+                cout << path[i];
+                if (i != 0) cout << " -> ";
+            }
+            cout << endl;
+        }
+    }
+    
     void printBlockedRoads() 
     {
           if (blockedRoads == nullptr) 
@@ -485,16 +523,15 @@ public:
           cout << "Blocked Roads: " << endl;
           while (current) 
           {
-              cout << "From " << current->source << " to " << current->destination << endl;
+              cout << current->source << " to " << current->destination << " is "<< current->status <<endl;
               if(current->next)
               current = current->next -> next;
               else
               current = nullptr;
           }
     }
-
 };
 
-int main() {    
+int main() {
     return 0;
 }
