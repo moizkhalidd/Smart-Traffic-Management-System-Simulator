@@ -230,5 +230,23 @@ public:
             current = current->next;
         }
     }
+
+    void displayNetwork() 
+    {
+        IntersectionNode* current = head;
+        while (current != nullptr)
+        {
+            cout << current->name << " -> ";
+            EdgeNode* edge = current->edgeList;
+            
+            while (edge != nullptr) 
+            {
+                cout  << " (" << edge->destination<< ","<<edge->travelTime<<")";
+                edge = edge->next;
+            }
+            cout << endl;
+            current = current->next;
+        }
+    }
 };
 
