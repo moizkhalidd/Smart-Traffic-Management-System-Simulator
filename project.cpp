@@ -472,6 +472,27 @@ public:
             }
         }
 
+    void printBlockedRoads() 
+    {
+          if (blockedRoads == nullptr) 
+          {
+            cout << "No blocked roads." << endl;
+            return;
+          }
+
+          BlockedRoad* current = blockedRoads ->next;
+          
+          cout << "Blocked Roads: " << endl;
+          while (current) 
+          {
+              cout << "From " << current->source << " to " << current->destination << endl;
+              if(current->next)
+              current = current->next -> next;
+              else
+              current = nullptr;
+          }
+    }
+
 };
 
 int main() {    
