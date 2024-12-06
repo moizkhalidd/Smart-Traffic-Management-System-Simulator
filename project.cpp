@@ -62,6 +62,7 @@ struct BlockedRoad
 class TrafficGraph 
 {
     IntersectionNode* head;
+    BlockedRoad* blockedRoads;
 
     IntersectionNode* findIntersection(string name) 
     {
@@ -123,8 +124,7 @@ class TrafficGraph
 
 public:
 
-    TrafficGraph() : head(nullptr) {}
-
+    TrafficGraph() : head(nullptr) , blockedRoads(nullptr){}
 
     ~TrafficGraph() 
     {
@@ -276,6 +276,44 @@ public:
             prev = edge;
             edge = edge->next;
         }
+    }
+
+     void blockRoad(string source, string destination) 
+    {
+          IntersectionNode* sourceNode = findIntersection(source);
+          if (sourceNode == nullptr) 
+          {
+              cout << "Error: Source intersection " << source << " does not exist." << endl;
+              return;
+          }
+
+          EdgeNode* edge = sourceNode->edgeList;
+          bool roadExists = false;
+
+          while (edge) 
+          {
+              if (edge->destination == destination) 
+              {
+                  roadExists = true; 
+                  break;
+              }
+              edge = edge->next;
+          }
+    
+      
+        if (roadExists) 
+        {
+            BlockedRoad* newBlockedRoad = new BlockedRoad(source, destination);
+            newBlockedRoad->next = blockedRoads;
+            blockedRoads = newBlockedRoad;
+
+
+            newBlockedRoad = new BlockedRoad(destination, source);
+            newBlockedRoad->next = blockedRoads;
+            blockedRoads = newBlockedRoad;
+        }
+        else
+        cout<<"Road does not exist from "<<source<<" to "<<destination<<endl;
     }
 
     void displayNetwork() 
