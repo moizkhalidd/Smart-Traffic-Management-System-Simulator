@@ -29,3 +29,113 @@ struct IntersectionNode
        next = nullptr;
     }
 };
+class TrafficGraph 
+{
+    IntersectionNode* head;
+
+    IntersectionNode* findIntersection(string name) 
+    {
+        IntersectionNode* current = head;
+        while (current != nullptr) 
+        {
+            if (current->name == name) 
+            {
+                return current;
+            }
+            current = current->next;
+        }
+        return nullptr;
+    }
+
+public:
+
+    TrafficGraph() : head(nullptr) {}
+
+
+    ~TrafficGraph() 
+    {
+        while (head != nullptr) 
+        {
+            IntersectionNode* temp = head;
+            head = head->next;
+
+            EdgeNode* edge = temp->edgeList;
+            while (edge != nullptr) 
+            {
+                EdgeNode* edgeTemp = edge;
+                edge = edge->next;
+                delete edgeTemp;
+            }
+
+            delete temp;
+        }
+    }
+
+
+    void addIntersection(const string& name) 
+    {
+        if (findIntersection(name) == nullptr)
+        {
+            IntersectionNode* newNode = new IntersectionNode(name);
+            
+            
+            if(head == nullptr)
+            head = newNode;
+            else
+            {
+               IntersectionNode* temp = head;
+               while(temp -> next != nullptr)
+               temp = temp -> next;
+               
+                temp->next = newNode;
+                temp = nullptr;
+                delete temp;
+            }
+        }
+    }
+
+
+    void addRoad(const string& source, const string& destination, int travelTime) 
+    {
+
+              addIntersection(source); 
+              addIntersection(destination);
+
+
+              IntersectionNode* sourceNode = findIntersection(source);
+              EdgeNode* newEdge1 = new EdgeNode(destination, travelTime);
+              
+              if(sourceNode->edgeList == nullptr)
+              sourceNode->edgeList = newEdge1;
+              else
+              {
+                         EdgeNode* temp = sourceNode->edgeList;
+                         while(temp -> next != nullptr)
+                         temp = temp -> next;
+                         
+                          temp->next = newEdge1;
+                          temp = nullptr;
+                          delete temp;
+                
+              }
+              
+              IntersectionNode* destinationNode = findIntersection(destination);
+              EdgeNode* newEdge2 = new EdgeNode(source, travelTime);
+              
+              if(destinationNode->edgeList == nullptr)
+              destinationNode->edgeList = newEdge2;
+              else
+              {
+                         EdgeNode* temp = destinationNode->edgeList;
+                         while(temp -> next != nullptr)
+                         temp = temp -> next;
+                         
+                          temp->next = newEdge2;
+                          temp = nullptr;
+                          delete temp;
+                
+              }
+    
+    }  
+};
+
