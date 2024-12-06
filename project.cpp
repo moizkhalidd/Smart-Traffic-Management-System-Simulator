@@ -248,5 +248,31 @@ public:
             current = current->next;
         }
     }
+
+    void loadFromCSV(string filename) 
+    {
+        ifstream file(filename);
+        if (!file.is_open()) {
+            cout << "Error: Could not open file " << filename << endl;
+            return;
+        }
+
+        string line, source, destination, weightStr;
+        while (getline(file, line)) 
+        {
+            stringstream ss(line);
+            getline(ss, source, ',');
+            getline(ss, destination, ',');
+            getline(ss, weightStr, ',');
+
+             try 
+             {
+                int weight = stoi(weightStr); 
+                addRoad(source, destination, weight);
+             } 
+             catch (const invalid_argument& e) {}
+        }
+        file.close();
+    }
 };
 
