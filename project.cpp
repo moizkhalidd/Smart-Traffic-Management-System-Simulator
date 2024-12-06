@@ -121,7 +121,19 @@ class TrafficGraph
           return -1;
       }
 
-
+      bool isRoadBlocked(string source, string destination) 
+      {
+        BlockedRoad* current = blockedRoads;
+        while (current) {
+            if ((current->source == source && current->destination == destination) || (current->source == destination && current->destination == source)) 
+            {
+                return true; 
+            }
+            current = current->next;
+        }
+        return false;
+       }
+  
 public:
 
     TrafficGraph() : head(nullptr) , blockedRoads(nullptr){}
@@ -440,6 +452,12 @@ public:
 
             while (edge) 
             {
+                  if (isRoadBlocked(nodes[u].name, edge->destination)) 
+                  {
+                      edge = edge->next;
+                      continue;
+                  }
+               
                 int neighborIndex = getIndex(edge->destination, nodes,nodeCount);
                 if (!nodes[neighborIndex].visited) 
                 {
@@ -454,38 +472,6 @@ public:
             }
         }
 
-        int endIndex = getIndex(end, nodes,nodeCount);
-        
-        if (endIndex == -1 || nodes[endIndex].distance == INF) 
-        {
-            cout << "No path from " << start << " to " << end << endl;
-        } 
-        else 
-        {
-            cout << "Shortest path from " << start << " to " << end << " is " << nodes[endIndex].distance << " minutes." << endl;
-            
-            cout << "Path: ";
-            
-            string path[26];
-            int pathIndex = 0;
-            
-            string currentNode = end;
-            
-            while (currentNode != start) 
-            {
-                path[pathIndex++] = currentNode;
-                currentNode = nodes[getIndex(currentNode, nodes, nodeCount)].parent;
-            }
-            path[pathIndex++] = start;
-            
-            for (int i = pathIndex - 1; i >= 0; --i) 
-            {
-                cout << path[i];
-                if (i != 0) cout << " -> ";
-            }
-            cout << endl;
-        }
-    }
 };
 
 int main() {    
