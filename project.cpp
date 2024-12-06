@@ -46,6 +46,19 @@ struct NodeDistance
      parent = "";
   }
 };
+struct BlockedRoad 
+{
+    string source;
+    string destination;
+    BlockedRoad* next;
+
+    BlockedRoad(string s, string d) 
+    { 
+      source = s;  
+      destination = d;
+      next = nullptr;
+    }
+};
 class TrafficGraph 
 {
     IntersectionNode* head;
