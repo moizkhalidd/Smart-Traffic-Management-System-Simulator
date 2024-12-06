@@ -93,6 +93,15 @@ class TrafficGraph
         }
     }
 
+      int getIndex(const string& name, NodeDistance nodes[], int nodeCount) 
+      {
+          for (int i = 0; i < nodeCount; ++i) 
+          {
+              if (nodes[i].name == name) 
+              return i;
+          }
+          return -1;
+      }
 public:
 
     TrafficGraph() : head(nullptr) {}
@@ -290,5 +299,81 @@ public:
         }
         file.close();
     }
+
+    void shortestPathdijkstra(string start, string end) 
+    {
+         int INF = 1e9;
+
+        NodeDistance nodes[26];
+
+        int nodeCount = 0;
+        IntersectionNode* current = head;
+        
+        while (current) 
+        {
+            NodeDistance defaultNode(current->name, INF);
+            nodes[nodeCount++] = defaultNode;
+            current = current->next;
+        }
+        
+        
+        int startIndex = getIndex(start, nodes,nodeCount);
+       
+       if (startIndex == -1) 
+        {
+            cout << "Start node not found." << endl;
+            return;
+        }
+        
+        nodes[startIndex].distance = 0;
+
+        for (int i = 0; i < nodeCount; ++i) 
+        {
+            int minDist = INF, u = -1;
+            
+            for (int j = 0; j < nodeCount; ++j) 
+            {
+                if (!nodes[j].visited && nodes[j].distance < minDist) 
+                {
+                    minDist = nodes[j].distance;
+                    u = j;
+                }
+            }
+
+            if (u == -1) 
+            break; 
+           
+            nodes[u].visited = true;
+
+            IntersectionNode* node = findIntersection(nodes[u].name);
+            EdgeNode* edge = node->edgeList;
+
+            while (edge) 
+            {
+                int neighborIndex = getIndex(edge->destination, nodes,nodeCount);
+                if (!nodes[neighborIndex].visited) 
+                {
+                    int newDist = nodes[u].distance + edge->travelTime;
+                    if (newDist < nodes[neighborIndex].distance) 
+                    {
+                        nodes[neighborIndex].distance = newDist;
+                    }
+                }
+                edge = edge->next;
+            }
+        }
+
+        int endIndex = getIndex(end, nodes,nodeCount);
+        
+        if (endIndex == -1 || nodes[endIndex].distance == INF) 
+        {
+            cout << "No path from " << start << " to " << end << endl;
+        } 
+        else 
+        {
+            cout << "Shortest path from " << start << " to " << end << " is " << nodes[endIndex].distance << " minutes." << endl;
+        }
+    }
+};
 };
 
