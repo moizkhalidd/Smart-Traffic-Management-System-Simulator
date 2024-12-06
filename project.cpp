@@ -34,7 +34,7 @@ struct NodeDistance
   string name;
   int distance;
   bool visited;
-  
+  string parent;
   NodeDistance()
   {}
   
@@ -43,6 +43,7 @@ struct NodeDistance
      name= n;
      distance = d;
      visited = 0;
+     parent = "";
   }
 };
 class TrafficGraph 
@@ -62,6 +63,7 @@ class TrafficGraph
         }
         return nullptr;
     }
+
 
     void removeIncomingEdges(string nodeName) 
     {
@@ -92,6 +94,8 @@ class TrafficGraph
             current = current->next;
         }
     }
+    
+    
 
       int getIndex(const string& name, NodeDistance nodes[], int nodeCount) 
       {
@@ -102,6 +106,8 @@ class TrafficGraph
           }
           return -1;
       }
+
+
 public:
 
     TrafficGraph() : head(nullptr) {}
@@ -191,35 +197,9 @@ public:
                 
               }
     
-    } 
-
-    void removeRoad(const string& source, const string& destination) 
-    {
-        IntersectionNode* sourceNode = findIntersection(source);
-        if (sourceNode == nullptr) return;
-
-        EdgeNode* prev = nullptr;
-        EdgeNode* edge = sourceNode->edgeList;
-
-        while (edge != nullptr) 
-        {
-            if (edge->destination == destination) 
-            {
-                if (prev == nullptr)
-                {
-                    sourceNode->edgeList = edge->next;
-                } 
-                else 
-                {
-                    prev->next = edge->next;
-                }
-                delete edge;
-                return;
-            }
-            prev = edge;
-            edge = edge->next;
-        }
     }
+
+
 
     void removeIntersection(const string& name)
     {
@@ -256,6 +236,35 @@ public:
         }
     }
 
+
+    void removeRoad(const string& source, const string& destination) 
+    {
+        IntersectionNode* sourceNode = findIntersection(source);
+        if (sourceNode == nullptr) return;
+
+        EdgeNode* prev = nullptr;
+        EdgeNode* edge = sourceNode->edgeList;
+
+        while (edge != nullptr) 
+        {
+            if (edge->destination == destination) 
+            {
+                if (prev == nullptr)
+                {
+                    sourceNode->edgeList = edge->next;
+                } 
+                else 
+                {
+                    prev->next = edge->next;
+                }
+                delete edge;
+                return;
+            }
+            prev = edge;
+            edge = edge->next;
+        }
+    }
+
     void displayNetwork() 
     {
         IntersectionNode* current = head;
@@ -273,6 +282,7 @@ public:
             current = current->next;
         }
     }
+
 
     void loadFromCSV(string filename) 
     {
@@ -292,14 +302,15 @@ public:
 
              try 
              {
-                int weight = stoi(weightStr); 
+                int weight = stoi(weightStr);
                 addRoad(source, destination, weight);
              } 
              catch (const invalid_argument& e) {}
         }
         file.close();
     }
-
+    
+    
     void shortestPathdijkstra(string start, string end) 
     {
          int INF = 1e9;
@@ -357,6 +368,7 @@ public:
                     if (newDist < nodes[neighborIndex].distance) 
                     {
                         nodes[neighborIndex].distance = newDist;
+                        nodes[neighborIndex].parent = nodes[u].name;
                     }
                 }
                 edge = edge->next;
@@ -372,8 +384,31 @@ public:
         else 
         {
             cout << "Shortest path from " << start << " to " << end << " is " << nodes[endIndex].distance << " minutes." << endl;
+            
+            cout << "Path: ";
+            
+            string path[26];
+            int pathIndex = 0;
+            
+            string currentNode = end;
+            
+            while (currentNode != start) 
+            {
+                path[pathIndex++] = currentNode;
+                currentNode = nodes[getIndex(currentNode, nodes, nodeCount)].parent;
+            }
+            path[pathIndex++] = start;
+            
+            for (int i = pathIndex - 1; i >= 0; --i) 
+            {
+                cout << path[i];
+                if (i != 0) cout << " -> ";
+            }
+            cout << endl;
         }
     }
 };
-};
 
+int main() {    
+    return 0;
+}
