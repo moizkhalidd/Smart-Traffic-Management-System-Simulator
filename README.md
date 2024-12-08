@@ -139,3 +139,21 @@ The **Traffic Management System** provides a comprehensive solution for optimizi
 
 ![image](https://github.com/user-attachments/assets/3c0a0362-6af3-4d31-9845-77a0522d196a)
 
+## Road Removal
+
+![image](https://github.com/user-attachments/assets/b3474864-492e-42df-9bf3-c05793fd5c41)
+
+**Display After Removal**
+
+![image](https://github.com/user-attachments/assets/1b06631d-15ab-4d2c-a331-080f7d026854)
+
+## Display Shortest Path
+
+![image](https://github.com/user-attachments/assets/44323f9f-b1f1-4b90-ad7f-59c1fcf3889e)
+
+## Exiting Simulation
+
+![image](https://github.com/user-attachments/assets/deb50472-f569-4218-a506-d0de58164f71)
+
+
+
