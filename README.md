@@ -96,5 +96,15 @@ The **Traffic Management System** provides a comprehensive solution for optimizi
 
 ![image](https://github.com/user-attachments/assets/30ca2793-4f22-4027-b9b5-c9e2b21f56d2)
 
+## Vehicle Routing (all posible routes)
 
+![image](https://github.com/user-attachments/assets/bfcb6301-0437-44cb-a0a2-5537c3664f7f)
+
+## Add Vehicle
+
+![image](https://github.com/user-attachments/assets/c4d0b5da-2717-4abd-842d-d415cb6b73f5)
+
+**Diplaying addition of vehicle** 
+
+![image](https://github.com/user-attachments/assets/32df13d2-a493-4098-ae77-978297402ab5)
 
