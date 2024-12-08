@@ -27,6 +27,14 @@ struct EdgeNode
         next = nullptr;
     }
 };
+struct TrafficSignal
+{
+    string intersection;
+    int greenTime;
+
+    TrafficSignal() {}
+    TrafficSignal(string inter, int time) : intersection(inter), greenTime(time) {}
+};
 struct IntersectionNode
 {
     string name;
@@ -343,6 +351,60 @@ public:
                      << ", Vehicles: " << current->vehicleCount << endl;
                 current = current->next;
             }
+        }
+    }
+};
+class TrafficSignalManager
+{
+private:
+    TrafficSignal signals[26];
+    int signalCount;
+
+public:
+    TrafficSignalManager() : signalCount(0) {}
+
+    TrafficSignal *getSignal(string name)
+    {
+        for (int i = 0; i < 26; i++)
+        {
+            if (name == signals[i].intersection)
+                return &signals[i];
+        }
+
+        return NULL;
+    }
+    // Parse traffic signal data
+    void parseTrafficSignals(const string &filename)
+    {
+        ifstream file(filename);
+        string line;
+        int i = 0;
+        while (getline(file, line))
+        {
+
+            if (i == 0)
+            {
+                i++;
+                continue;
+            }
+            stringstream ss(line);
+            string intersection;
+            int greenTime;
+            getline(ss, intersection, ',');
+            ss >> greenTime;
+
+            signals[signalCount++] = TrafficSignal(intersection, greenTime);
+        }
+        file.close();
+    }
+
+    // Display current signal timings
+    void displaySignals()
+    {
+        for (int i = 0; i < signalCount; ++i)
+        {
+            cout << "Intersection: " << signals[i].intersection
+                 << ", Green Time: " << signals[i].greenTime << " seconds.\n";
         }
     }
 };
