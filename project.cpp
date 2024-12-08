@@ -350,6 +350,7 @@ class TrafficGraph
 {
     IntersectionNode *head;
     BlockedRoad *blockedRoads;
+    HashTable h;
     TrafficSignalManager manager;
     MinHeap heap;
 
@@ -596,7 +597,7 @@ public:
             edge = edge->next;
         }
     }
-
+    
     void blockRoad(string source, string destination, string status = "Blocked")
     {
         IntersectionNode *sourceNode = findIntersection(source);
@@ -905,6 +906,14 @@ public:
                 current = nullptr;
         }
     }
+    void printSignal()
+    {
+        manager.displaySignals();
+    }
+    void resetHash()
+    {
+        h.reset();
+    }
 
     void shortestPath(string start, string end, bool inp)
     {
@@ -1131,129 +1140,136 @@ public:
         manager.displaySignals();
     }
 
-    void emergencyRouting(const string& start, const string& goal, const string& vehicleID) 
+    void emergencyRouting(const string &start, const string &goal, const string &vehicleID)
     {
 
-	    ifstream vehicleFile("emergency_vehicles.csv");
-	    if (!vehicleFile.is_open()) {
-		cout << "Error: Could not open emergency_vehicles.csv\n";
-		return;
-	    }
+        ifstream vehicleFile("emergency_vehicles.csv");
+        if (!vehicleFile.is_open())
+        {
+            cout << "Error: Could not open emergency_vehicles.csv\n";
+            return;
+        }
 
-	    string line, id, startNode, endNode, priority;
-	    getline(vehicleFile, line); // Skip header
-	    while (getline(vehicleFile, line)) {
-		stringstream ss(line);
-		getline(ss, id, ',');
-		getline(ss, startNode, ',');
-		getline(ss, endNode, ',');
-		getline(ss, priority, ',');
-		if (id == vehicleID) {
-		    cout << "Emergency vehicle " << vehicleID << " is en route from " << startNode
-		         << " to " << endNode << ".\n";
-		    cout << "Priority Level: " << priority << endl;
-		    break;
-		}
-	    }
-	    vehicleFile.close();
+        string line, id, startNode, endNode, priority;
+        getline(vehicleFile, line); // Skip header
+        while (getline(vehicleFile, line))
+        {
+            stringstream ss(line);
+            getline(ss, id, ',');
+            getline(ss, startNode, ',');
+            getline(ss, endNode, ',');
+            getline(ss, priority, ',');
+            if (id == vehicleID)
+            {
+                cout << "Emergency vehicle " << vehicleID << " is en route from " << startNode
+                     << " to " << endNode << ".\n";
+                cout << "Priority Level: " << priority << endl;
+                break;
+            }
+        }
+        vehicleFile.close();
 
-	    cout << "Calculating shortest path...\n";
-	    shortestPathdijkstra(start, goal);
+        cout << "Calculating shortest path...\n";
+        shortestPathdijkstra(start, goal);
 
-	    ifstream signalFile("traffic_signals.csv");
-	    if (!signalFile.is_open()) {
-		cout << "Error: Could not open traffic_signals.csv\n";
-		return;
-	    }
+        ifstream signalFile("traffic_signals.csv");
+        if (!signalFile.is_open())
+        {
+            cout << "Error: Could not open traffic_signals.csv\n";
+            return;
+        }
 
-	    cout << "Clearing path for emergency vehicle " << vehicleID << "...\n";
+        cout << "Clearing path for emergency vehicle " << vehicleID << "...\n";
 
-	    getline(signalFile, line); // Skip header
-	    while (getline(signalFile, line)) {
-		stringstream ss(line);
-		string intersection, greenTimeStr;
-		getline(ss, intersection, ',');
-		getline(ss, greenTimeStr, ',');
+        getline(signalFile, line); // Skip header
+        while (getline(signalFile, line))
+        {
+            stringstream ss(line);
+            string intersection, greenTimeStr;
+            getline(ss, intersection, ',');
+            getline(ss, greenTimeStr, ',');
 
-		if (isPartOfShortestPath(intersection , start , goal)) { 
-		    cout << "Traffic signal at " << intersection << " set to green for emergency vehicle.\n";
-		}
-	    }
-	    signalFile.close();
+            if (isPartOfShortestPath(intersection, start, goal))
+            {
+                cout << "Traffic signal at " << intersection << " set to green for emergency vehicle.\n";
+            }
+        }
+        signalFile.close();
 
-	    cout << "Emergency vehicle " << vehicleID << " has passed through the route.\n";
+        cout << "Emergency vehicle " << vehicleID << " has passed through the route.\n";
 
-	    signalFile.open("traffic_signals.csv");
-	    if (!signalFile.is_open()) {
-		cout << "Error: Could not reopen traffic_signals.csv\n";
-		return;
-	    }
+        signalFile.open("traffic_signals.csv");
+        if (!signalFile.is_open())
+        {
+            cout << "Error: Could not reopen traffic_signals.csv\n";
+            return;
+        }
 
-	    cout << "Restoring normal traffic signal timings...\n";
-	    getline(signalFile, line); // Skip header
-	    while (getline(signalFile, line)) {
-		stringstream ss(line);
-		string intersection, greenTimeStr;
-		getline(ss, intersection, ',');
-		getline(ss, greenTimeStr, ',');
+        cout << "Restoring normal traffic signal timings...\n";
+        getline(signalFile, line); // Skip header
+        while (getline(signalFile, line))
+        {
+            stringstream ss(line);
+            string intersection, greenTimeStr;
+            getline(ss, intersection, ',');
+            getline(ss, greenTimeStr, ',');
 
-		if (isPartOfShortestPath(intersection , start , goal)) {
-		    cout << "Traffic signal at " << intersection << " restored to " << greenTimeStr << " seconds.\n";
-		}
-	    }
-	    signalFile.close();
+            if (isPartOfShortestPath(intersection, start, goal))
+            {
+                cout << "Traffic signal at " << intersection << " restored to " << greenTimeStr << " seconds.\n";
+            }
+        }
+        signalFile.close();
     }
-    
-    bool isPartOfShortestPath(const string& intersection, const string& start, const string& end)
+
+    bool isPartOfShortestPath(const string &intersection, const string &start, const string &end)
     {
-    	int INF = 1e9;
+        int INF = 1e9;
 
         NodeDistance nodes[26];
 
         int nodeCount = 0;
-        IntersectionNode* current = head;
-        
-        while (current) 
+        IntersectionNode *current = head;
+
+        while (current)
         {
             NodeDistance defaultNode(current->name, INF);
             nodes[nodeCount++] = defaultNode;
             current = current->next;
         }
-        
-        
-        int startIndex = getIndex(start, nodes,nodeCount);
 
-        
+        int startIndex = getIndex(start, nodes, nodeCount);
+
         nodes[startIndex].distance = 0;
 
-        for (int i = 0; i < nodeCount; ++i) 
+        for (int i = 0; i < nodeCount; ++i)
         {
             int minDist = INF, u = -1;
-            
-            for (int j = 0; j < nodeCount; ++j) 
+
+            for (int j = 0; j < nodeCount; ++j)
             {
-                if (!nodes[j].visited && nodes[j].distance < minDist) 
+                if (!nodes[j].visited && nodes[j].distance < minDist)
                 {
                     minDist = nodes[j].distance;
                     u = j;
                 }
             }
 
-            if (u == -1) 
-            break; 
-           
+            if (u == -1)
+                break;
+
             nodes[u].visited = true;
 
-            IntersectionNode* node = findIntersection(nodes[u].name);
-            EdgeNode* edge = node->edgeList;
+            IntersectionNode *node = findIntersection(nodes[u].name);
+            EdgeNode *edge = node->edgeList;
 
-            while (edge) 
+            while (edge)
             {
-                int neighborIndex = getIndex(edge->destination, nodes,nodeCount);
-                if (!nodes[neighborIndex].visited) 
+                int neighborIndex = getIndex(edge->destination, nodes, nodeCount);
+                if (!nodes[neighborIndex].visited)
                 {
                     int newDist = nodes[u].distance + edge->travelTime;
-                    if (newDist < nodes[neighborIndex].distance) 
+                    if (newDist < nodes[neighborIndex].distance)
                     {
                         nodes[neighborIndex].distance = newDist;
                         nodes[neighborIndex].parent = nodes[u].name;
@@ -1263,28 +1279,27 @@ public:
             }
         }
 
-        int endIndex = getIndex(end, nodes,nodeCount);
+        int endIndex = getIndex(end, nodes, nodeCount);
         string path[26];
         int pathIndex = 0;
 
-            
-            string currentNode = end;
-            
-            while (currentNode != start) 
+        string currentNode = end;
+
+        while (currentNode != start)
+        {
+            path[pathIndex++] = currentNode;
+            currentNode = nodes[getIndex(currentNode, nodes, nodeCount)].parent;
+        }
+        path[pathIndex++] = start;
+
+        for (int i = pathIndex - 1; i >= 0; --i)
+        {
+            if (path[i] == intersection)
             {
-                path[pathIndex++] = currentNode;
-                currentNode = nodes[getIndex(currentNode, nodes, nodeCount)].parent;
+                return true;
             }
-            path[pathIndex++] = start;
-            
-            for (int i = pathIndex - 1; i >= 0; --i) 
-            {
-                if (path[i] == intersection)
-                {
-                	return true;
-                }
-            }
-	return false;
+        }
+        return false;
     }
 };
 
