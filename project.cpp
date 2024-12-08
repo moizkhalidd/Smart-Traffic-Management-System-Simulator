@@ -81,6 +81,64 @@ struct HeapNode {
           priority = 3;
         }
 };
+class MinHeap {
+private:
+    HeapNode* heap[100];
+    int size;
+
+    void heapifyUp(int index) {
+        while (index > 0) {
+            int parent = (index - 1) / 2;
+            if (heap[parent]->priority <= heap[index]->priority)
+                break;
+
+            swap(heap[parent], heap[index]);
+            index = parent;
+        }
+    }
+
+    void heapifyDown(int index) {
+        int left, right, smallest;
+        while (true) {
+            left = 2 * index + 1;
+            right = 2 * index + 2;
+            smallest = index;
+
+            if (left < size && heap[left]->priority < heap[smallest]->priority)
+                smallest = left;
+            if (right < size && heap[right]->priority < heap[smallest]->priority)
+                smallest = right;
+
+            if (smallest == index)
+                break;
+
+            swap(heap[smallest], heap[index]);
+            index = smallest;
+        }
+    }
+
+public:
+    MinHeap() : size(0) {}
+
+    void insert(string& id,const string& src, string& end,  string priority) {
+        if (size >= 100) return; // Heap capacity
+        heap[size] = new HeapNode(id, src, end, priority);
+        heapifyUp(size);
+        size++;
+    }
+
+    HeapNode* extractMin() {
+        if (size == 0) return nullptr;
+        HeapNode* root = heap[0];
+        heap[0] = heap[--size];
+        heapifyDown(0);
+        return root;
+    }
+
+    bool isEmpty(){
+        return size == 0;
+    }
+};
 class TrafficGraph 
 {
     IntersectionNode* head;
