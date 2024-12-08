@@ -659,7 +659,7 @@ public:
             edge = edge->next;
         }
     }
-    
+
     void blockRoad(string source, string destination, string status = "Blocked")
     {
         IntersectionNode *sourceNode = findIntersection(source);
@@ -1082,6 +1082,55 @@ public:
                 }
             }
         }
+    }
+    void findAllPaths(const string &current, const string &end, bool visited[], string path[], int &pathIndex, int currentWeight)
+    {
+        // Mark the current node as visited and add it to the path
+        visited[current[0] - 'A'] = true;
+        path[pathIndex] = current;
+        pathIndex++;
+
+        // If we reach the destination, print the path and total weight
+        if (current == end)
+        {
+            cout << "Path: ";
+            for (int i = 0; i < pathIndex; i++)
+            {
+                cout << path[i];
+                if (i < pathIndex - 1)
+                    cout << " -> ";
+            }
+            cout << " | Total Weight: " << currentWeight << endl;
+        }
+        else
+        {
+            // Explore all adjacent nodes
+            IntersectionNode *currentNode = findIntersection(current);
+            if (currentNode)
+            {
+                EdgeNode *adj = currentNode->edgeList;
+                while (adj != nullptr)
+                {
+                    int adjIndex = adj->destination[0] - 'A';
+                    if (!visited[adjIndex] && !isRoadBlocked(current, adj->destination))
+                    {
+                        findAllPaths(adj->destination, end, visited, path, pathIndex, currentWeight + adj->travelTime);
+                    }
+                    adj = adj->next;
+                }
+            }
+        }
+
+        visited[current[0] - 'A'] = false;
+        pathIndex--;
+    }
+
+    void printAll(const string &start, const string &end)
+    {
+        string path[256];            // Array to store the current path
+        bool visited[256] = {false}; // Track visited nodes
+        int pathIndex = 0;           // Index for the current path
+        findAllPaths(start, end, visited, path, pathIndex, 0);
     }
 
     void shortestPath2(string start, string end, bool inp)
