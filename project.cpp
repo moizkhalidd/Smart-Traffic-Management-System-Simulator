@@ -1001,42 +1001,6 @@ public:
         }
     }
    
-    //function to remove intersection
-    void removeIntersection(string name)
-    {
-        removeIncomingEdges(name);
-
-        IntersectionNode *prev = nullptr;
-        IntersectionNode *current = head;
-
-        while (current != nullptr)
-        {
-            if (current->name == name)
-            {
-                if (prev == nullptr)
-                {
-                    head = current->next;
-                }
-                else
-                {
-                    prev->next = current->next;
-                }
-
-                EdgeNode *edge = current->edgeList;
-                while (edge != nullptr)
-                {
-                    EdgeNode *temp = edge;
-                    edge = edge->next;
-                    delete temp;
-                }
-                delete current;
-                return;
-            }
-            prev = current;
-            current = current->next;
-        }
-    }
-
     //function to remove road
     void removeRoad(string source, string destination)
     {
@@ -1440,18 +1404,16 @@ int main()
     	cout<<"8.  Add Vehicle"<<endl;
     	cout<<"9.  Manage Signals"<<endl;
     	cout<<"10. Add Priority Vehicle"<<endl;
-    	cout<<"11. Add Intersection"<<endl;
-    	cout<<"12. Add Road"<<endl;
-    	cout<<"13. Remove Intersection"<<endl;
-    	cout<<"14. Remove Road"<<endl;
-    	cout<<"15. Shortest Path"<<endl;
-    	cout<<"16. Exit Simulation"<<endl;
+    	cout<<"11. Add Road"<<endl;
+    	cout<<"12. Remove Road"<<endl;
+    	cout<<"13. Shortest Path"<<endl;
+    	cout<<"14. Exit Simulation"<<endl;
     	cout<<endl;
     	cout<<"Enter your choice: ";
     	
     	cin>>choice;
     	
-    	while (choice > 16 || choice < 1)
+    	while (choice > 14 || choice < 1)
     	{
     		cout<<"Invalid Input!"<<endl;
     		cout<<"Enter Valid Option: ";
@@ -1571,25 +1533,8 @@ int main()
     			trafficGraph.insertVehicleWithPriority(name, st, e,pr);
     			break;
     		}
+    		
     		case 11:
-    		{
-    		        string st ;
-    		        cout<<"------Add Intersection------"<<endl;
-    		        cout<<"Enter The Intersection: ";
-    			cin>>st;
-    			if(st[0] >= 'A' && st[0] <= 'Z')
-    			{
-    			 trafficGraph.addIntersection(st);
-    			 trafficGraph.resetHash();
-    			 trafficGraph.processVehiclesCSV("vehicles.csv");
-    			}
-    			else
-    			{
-    			    cout<<"Invalid Input. Please enter from A-Z"<<endl;
-    			}
-    			break;
-    		}
-    		case 12:
     		{
     		   
     			string st , e;
@@ -1611,23 +1556,8 @@ int main()
     			cout<<"Invalid Input. Please enter from A-Z"<<endl;
     			break;
     		}
-    		case 13:
-    		{
-    			string st ;
-    		        cout<<"------Remove Intersection------"<<endl;
-    		        cout<<"Enter The Intersection: ";
-    			cin>>st;
-    			if(st[0] >= 'A' && st[0] <= 'Z')
-    			{
-        			trafficGraph.removeIntersection(st);
-        			trafficGraph.resetHash();
-        			trafficGraph.processVehiclesCSV("vehicles.csv");
-        		}
-        		else
-        		cout<<"Invalid Input. Please enter from A-Z"<<endl;
-    			break;
-    		}
-    		case 14:
+    		
+    		case 12:
     		{
     			string st , e;
     		        cout<<"------Remove Road------"<<endl;
@@ -1645,7 +1575,7 @@ int main()
         		cout<<"Invalid Input. Please enter from A-Z"<<endl;
     			break;
     		}
-    		case 15:
+    		case 13:
     		{
     			cout<<"------Shortest Path------"<<endl;
                         string st , e;
@@ -1656,7 +1586,7 @@ int main()
     			trafficGraph.shortestPathdijkstra(st,e);
     			break;
     		}
-    		case 16:
+    		case 14:
     		{
     			cout<<"Exiting The Simulation!"<<endl;
     			flag = false;
