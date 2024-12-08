@@ -119,8 +119,6 @@ The **Traffic Management System** provides a comprehensive solution for optimizi
 
 ![image](https://github.com/user-attachments/assets/955fdc43-db6f-4f3a-b7bb-481e6d8cc47c)
 
-## Add Intersection
-
 
 ## Add Road
 
