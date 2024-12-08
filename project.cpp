@@ -1299,14 +1299,18 @@ int main()
     	cout<<"8.  Add Vehicle"<<endl;
     	cout<<"9.  Manage Signals"<<endl;
     	cout<<"10. Add Priority Vehicle"<<endl;
-    	cout<<"11. Shortest Path"<<endl;
-    	cout<<"12. Exit Simulation"<<endl;
+    	cout<<"11. Add Intersection"<<endl;
+    	cout<<"12. Add Road"<<endl;
+    	cout<<"13. Remove Intersection"<<endl;
+    	cout<<"14. Remove Road"<<endl;
+    	cout<<"15. Shortest Path"<<endl;
+    	cout<<"16. Exit Simulation"<<endl;
     	cout<<endl;
     	cout<<"Enter your choice: ";
     	
     	cin>>choice;
     	
-    	while (choice > 12 || choice < 1)
+    	while (choice > 16 || choice < 1)
     	{
     		cout<<"Invalid Input!"<<endl;
     		cout<<"Enter Valid Option: ";
@@ -1349,10 +1353,10 @@ int main()
     			cout<<"Enter The End Intersection: ";
     			cin>>e;
     			trafficGraph.shortestPathdijkstra(st, e);
-    			trafficGraph.ok2(st, e, 1);
+    			trafficGraph.shortestPath2(st, e, 1);
     			cout<<"Signal Status for emergency"<<endl;
     			trafficGraph.TrafficSignalsStatus();
-    			trafficGraph.ok2(st, e, 0);
+    			trafficGraph.shortestPath2(st, e, 0);
     			cout<<"Signal Status back to normal"<<endl;
     			trafficGraph.TrafficSignalsStatus();
     			break;    			
@@ -1428,16 +1432,16 @@ int main()
     		}
     		case 11:
     		{
-    			cout<<"------Shortest Path------"<<endl;
-                        string st , e;
-    			cout<<"Enter The start Intersection: ";
+    		        string st ;
+    		        cout<<"------Add Intersection------"<<endl;
+    		        cout<<"Enter The Intersection: ";
     			cin>>st;
-    			cout<<"Enter The End Intersection: ";
-    			cin>>e;
-    			trafficGraph.shortestPathdijkstra(st,e);
+    			trafficGraph.addIntersection(st);
+    			trafficGraph.resetHash();
+    			trafficGraph.processVehiclesCSV("vehicles.csv");
     			break;
     		}
-		case 12:
+    		case 12:
     		{
     		   
     			string st , e;
@@ -1454,7 +1458,7 @@ int main()
     			trafficGraph.processVehiclesCSV("vehicles.csv");
     			break;
     		}
-		case 13:
+    		case 13:
     		{
     			string st ;
     		        cout<<"------Remove Intersection------"<<endl;
@@ -1465,7 +1469,7 @@ int main()
     			trafficGraph.processVehiclesCSV("vehicles.csv");
     			break;
     		}
-		case 14:
+    		case 14:
     		{
     			string st , e;
     		        cout<<"------Remove Road------"<<endl;
@@ -1479,6 +1483,17 @@ int main()
     			break;
     		}
     		case 15:
+    		{
+    			cout<<"------Shortest Path------"<<endl;
+                        string st , e;
+    			cout<<"Enter The start Intersection: ";
+    			cin>>st;
+    			cout<<"Enter The End Intersection: ";
+    			cin>>e;
+    			trafficGraph.shortestPathdijkstra(st,e);
+    			break;
+    		}
+    		case 16:
     		{
     			cout<<"Exiting The Simulation!"<<endl;
     			flag = false;
