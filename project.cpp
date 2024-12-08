@@ -1465,7 +1465,20 @@ int main()
     			trafficGraph.processVehiclesCSV("vehicles.csv");
     			break;
     		}
-    		case 14:
+		case 14:
+    		{
+    			string st , e;
+    		        cout<<"------Remove Road------"<<endl;
+    		        cout<<"Enter The start Intersection: ";
+    			cin>>st;
+    			cout<<"Enter The End Intersection: ";
+    			cin>>e;	
+    			trafficGraph.removeRoad(st,e);
+    			trafficGraph.resetHash();
+    			trafficGraph.processVehiclesCSV("vehicles.csv");
+    			break;
+    		}
+    		case 15:
     		{
     			cout<<"Exiting The Simulation!"<<endl;
     			flag = false;
