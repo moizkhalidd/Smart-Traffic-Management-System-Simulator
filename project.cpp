@@ -1414,7 +1414,101 @@ public:
     }
 };
 
-int main()
-{
+int main() {
+    
+    TrafficGraph trafficGraph;
+    trafficGraph.loadFromCSV("road_network.csv");
+    trafficGraph.processVehiclesCSV("vehicles.csv");
+    
+    
+    int choice;
+    bool flag = true;
+    while(flag == true)
+    {
+    	cout<<"------SIMULATION DASHBOARD------"<<endl;
+    	cout<<"1. Display City Traffic Network"<<endl;
+    	cout<<"2. Display Traffic Signal Status"<<endl;
+    	cout<<"3. Display Congestion Status"<<endl;
+    	cout<<"4. Display Blocked Roads"<<endl;
+    	cout<<"5. Handle Emergency Vehicle Routing"<<endl;
+    	cout<<"6. Block Road due to Accident"<<endl;
+    	cout<<"7. Simulate Vehicle Routing"<<endl;
+    	cout<<"8. Exit Simulation"<<endl;
+    	cout<<endl;
+    	cout<<"Enter your choice: ";
+    	
+    	cin>>choice;
+    	
+    	while (choice > 8 || choice < 1)
+    	{
+    		cout<<"Invalid Input!"<<endl;
+    		cout<<"Enter Valid Option: ";
+    		cin>>choice;
+    	}
+    	
+    	switch (choice)
+    	{
+    		case 1:
+    		{
+    			    trafficGraph.displayNetwork();
+    			    cout << endl;
+    			    break;
+    		}
+    		case 2:
+    		{
+    			cout<<"------Traffic Signal Status------"<<endl;
+    			break;
+    		}
+    		case 3:
+    		{
+    			cout<<"------Congestion status------"<<endl;
+    			break;
+    		}
+    		case 4:
+    		{
+    			cout<<"------Blocked Roads------"<<endl;
+    			break;
+    		}
+    		case 5:
+    		{
+    			string st , e;
+    			cout<<"------Emergency Vehicle Handling------"<<endl;
+    			cout<<"Enter The start Intersection: ";
+    			cin>>st;
+    			cout<<"Enter The End Intersection: ";
+    			cin>>e;
+    			trafficGraph.emergencyRouting(st, e , "EV1");
+    			break;    			
+    		}
+    		case 6:
+    		{
+    			string st , e;
+    			cout<<"------Block Roads------"<<endl;
+    			cout<<"Enter The start Intersection of the road you want to block: ";
+    			cin>>st;
+    			cout<<"Enter The End Intersection of the road you want to block: ";
+    			cin>>e;
+    			break;
+    		}
+    		case 7:
+    		{
+    			string st , e;
+    			cout<<"------Vehicle Routing------"<<endl;
+    			cout<<"Enter The start Intersection: ";
+    			cin>>st;
+    			cout<<"Enter The End Intersection: ";
+    			cin>>e;
+    			cout<<"All Possible paths from "<< st <<"to "<<e<<"are: "<<endl;
+    			break;
+    		}
+    		case 8:
+    		{
+    			cout<<"Exiting The Simulation!"<<endl;
+    			flag = false;
+    			break;
+    		}
+    	}
+    	
+    } 
     return 0;
 }
