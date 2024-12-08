@@ -162,7 +162,65 @@ public:
         return size == 0;
     }
 };
+class Queue
+{
+    struct QueueNode
+    {
+        string id;
+        QueueNode *next;
 
+        QueueNode(string id) : id(id), next(nullptr) {}
+    };
+
+    QueueNode *front;
+    QueueNode *rear;
+
+public:
+    Queue() : front(nullptr), rear(nullptr) {}
+
+    void enqueue(const string &id)
+    {
+        QueueNode *newNode = new QueueNode(id);
+        if (rear == nullptr)
+        {
+            front = rear = newNode;
+            return;
+        }
+        rear->next = newNode;
+        rear = newNode;
+    }
+
+    bool dequeue(string &id)
+    {
+        if (front == nullptr)
+            return false;
+
+        QueueNode *temp = front;
+        id = front->id;
+        front = front->next;
+
+        if (front == nullptr)
+            rear = nullptr;
+
+        delete temp;
+        return true;
+    }
+
+    bool isEmpty() const
+    {
+        return front == nullptr;
+    }
+
+    ~Queue()
+    {
+        while (front != nullptr)
+        {
+            QueueNode *temp = front;
+            front = front->next;
+            delete temp;
+        }
+    }
+};
 class HashTable
 {
 private:
@@ -573,6 +631,64 @@ public:
         }
         else
             cout << "Road does not exist from " << source << " to " << destination << endl;
+    }
+
+    // BFS to find the path from start to end intersection
+    void BFS(const string &start, const string &end)
+    {
+        // Arrays to track visited intersections, previous intersections and total weight of the path
+        bool visited[256] = {false};
+        string previous[256];
+        int weight[256] = {0};
+
+        for (int i = 0; i < 256; i++)
+        {
+            previous[i] = "";
+            weight[i] = 0;
+        }
+
+        // Queue to explore intersections
+        Queue queue;
+
+        // Start BFS from the 'start' node
+        queue.enqueue(start);
+        visited[start[0] - 'A'] = true;
+
+        while (!queue.isEmpty())
+        {
+            string current;
+            if (!queue.dequeue(current))
+                continue;
+
+            // If we reach the destination, print the path and total weight
+            if (current == end)
+            {
+                shortestPath(start, end, 0);
+                path(previous, end);
+                return;
+            }
+
+            // Traverse the adjacent nodes (roads)
+            IntersectionNode *currentNode = findIntersection(current);
+            if (currentNode == nullptr)
+                continue;
+
+            EdgeNode *adj = currentNode->edgeList;
+            while (adj != nullptr)
+            {
+                int adjIndex = adj->destination[0] - 'A';
+                if (!visited[adjIndex] && !isRoadBlocked(current, adj->destination))
+                {
+                    queue.enqueue(adj->destination);
+                    visited[adjIndex] = true;
+                    previous[adjIndex] = current;
+                    weight[adjIndex] = weight[current[0] - 'A'] + adj->travelTime;
+                }
+                adj = adj->next;
+            }
+        }
+
+        cout << "No path found from " << start << " to " << end << endl;
     }
 
     void displayNetwork()
