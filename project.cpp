@@ -1437,7 +1437,24 @@ int main()
     			trafficGraph.shortestPathdijkstra(st,e);
     			break;
     		}
-    		case 12:
+		case 12:
+    		{
+    		   
+    			string st , e;
+    			float t;
+    		        cout<<"------Add Road------"<<endl;
+    		        cout<<"Enter The start Intersection: ";
+    			cin>>st;
+    			cout<<"Enter The End Intersection: ";
+    			cin>>e;
+    			cout<<"Enter Travel Time: "<<endl;
+    			cin>>t;
+    			trafficGraph.addRoad(st,e,t);
+    			trafficGraph.resetHash();
+    			trafficGraph.processVehiclesCSV("vehicles.csv");
+    			break;
+    		}
+    		case 13:
     		{
     			cout<<"Exiting The Simulation!"<<endl;
     			flag = false;
