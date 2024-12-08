@@ -1,9 +1,8 @@
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <string>
 using namespace std;
+//structure for hashTable
 struct Road
 {
     string source;
@@ -12,8 +11,14 @@ struct Road
     Road *next;
 
     Road(string src, string dest, int count = 0)
-        : source(src), destination(dest), vehicleCount(count), next(nullptr) {}
+    {
+        source = src;
+        destination = dest; 
+        vehicleCount = count; 
+        next = nullptr;
+    }
 };
+//structure for roads
 struct EdgeNode
 {
     string destination;
@@ -27,14 +32,7 @@ struct EdgeNode
         next = nullptr;
     }
 };
-struct TrafficSignal
-{
-    string intersection;
-    int greenTime;
-
-    TrafficSignal() {}
-    TrafficSignal(string inter, int time) : intersection(inter), greenTime(time) {}
-};
+//structure for intersection
 struct IntersectionNode
 {
     string name;
@@ -48,6 +46,7 @@ struct IntersectionNode
         next = nullptr;
     }
 };
+//structure for finding shortest path (used in dijkstra)
 struct NodeDistance
 {
     string name;
@@ -66,6 +65,7 @@ struct NodeDistance
         parent = "";
     }
 };
+//structure to block roads
 struct BlockedRoad
 {
     string source;
@@ -81,50 +81,66 @@ struct BlockedRoad
         status = stat;
     }
 };
-struct HeapNode
+//structure for traffic signal manager
+struct TrafficSignal 
 {
-    string id;
-    string start;
-    string end;
-    int priority;
-
-    HeapNode(string name, string s, string e, string p) : id(name), start(s), end(e)
-    {
-        if (p == "High")
-        {
-            priority = 1;
-        }
-        else if (p == "Medium")
-        {
-            priority = 2;
-        }
-        else
-            priority = 3;
+    string intersection;
+    int greenTime;
+    
+    TrafficSignal(){}
+    TrafficSignal(string inter, int time)
+    { 
+      intersection = inter; 
+      greenTime = time;
     }
 };
-class MinHeap
+//structure for min-heap
+struct HeapNode 
 {
-private:
-    HeapNode *heap[100];
+        string id;
+        string start;
+        string end;
+        int priority;
+
+        HeapNode(string name, string s, string e, string p) : id(name),start(s),end(e) 
+        {
+          if(p == "High")
+          {
+            priority = 1;
+          }
+          else if(p == "Medium")
+          {
+            priority = 2;
+          }
+          else
+          priority = 3;
+        }
+};
+//Min-Heap class to store priority 
+class MinHeap 
+{
+    HeapNode* heap[100];
     int size;
 
-    void heapifyUp(int index)
+    //function to heapifyUp 
+    void heapifyUp(int index) 
     {
-        while (index > 0)
+        while (index > 0) 
         {
             int parent = (index - 1) / 2;
             if (heap[parent]->priority <= heap[index]->priority)
-                break;
+            break;
 
             swap(heap[parent], heap[index]);
             index = parent;
         }
     }
-
-    void heapifyDown(int index)
+ 
+    //function to heapify down
+    void heapifyDown(int index) 
     {
         int left, right, smallest;
-        while (true)
+        while (true) 
         {
             left = 2 * index + 1;
             right = 2 * index + 2;
@@ -146,131 +162,134 @@ private:
 public:
     MinHeap() : size(0) {}
 
-    void insert(string &id, const string &src, string &end, string priority)
+    //function to insert in heap
+    void insert(string id ,string src, string end,  string priority) 
     {
-        if (size >= 100)
-            return; // Heap capacity
+        if (size >= 100) return; 
         heap[size] = new HeapNode(id, src, end, priority);
         heapifyUp(size);
         size++;
     }
 
-    HeapNode *extractMin()
+    //function to get the top root node
+    HeapNode* extractMin() 
     {
-        if (size == 0)
-            return nullptr;
-        HeapNode *root = heap[0];
+        if (size == 0) return nullptr;
+        HeapNode* root = heap[0];
         heap[0] = heap[--size];
         heapifyDown(0);
         return root;
     }
 
+    //function to check if heap is empty
     bool isEmpty()
     {
         return size == 0;
     }
 };
-class Queue
+//class for managing signals and their green time 
+class TrafficSignalManager 
 {
-    struct QueueNode
-    {
-        string id;
-        QueueNode *next;
-
-        QueueNode(string id) : id(id), next(nullptr) {}
-    };
-
-    QueueNode *front;
-    QueueNode *rear;
-
+    TrafficSignal signals[26];
+    int signalCount;
+  
 public:
-    Queue() : front(nullptr), rear(nullptr) {}
-
-    void enqueue(const string &id)
+    TrafficSignalManager() : signalCount(0) {}
+    
+    //function to get a specific intersection 
+    TrafficSignal* getSignal(string name)
     {
-        QueueNode *newNode = new QueueNode(id);
-        if (rear == nullptr)
+      for(int i = 0 ; i<26 ; i++)
+      {
+        if(name == signals[i].intersection)
+        return &signals[i];
+      }
+      
+       return NULL;
+    }
+    
+    // function to read greentime data from csv file
+    void parseTrafficSignals(const string& filename) 
+    {
+        ifstream file(filename);
+        string line;
+        int i = 0;
+        while (getline(file, line)) 
         {
-            front = rear = newNode;
-            return;
+           
+            if(i == 0)
+            {
+              i++;
+              continue;
+            }
+            stringstream ss(line);
+            string intersection;
+            int greenTime;
+            getline(ss, intersection, ',');
+            ss >> greenTime;
+
+            signals[signalCount++] = TrafficSignal(intersection, greenTime);
         }
-        rear->next = newNode;
-        rear = newNode;
+        file.close();
     }
-
-    bool dequeue(string &id)
+    
+    // function to display signals with greentime
+    void displaySignals() 
     {
-        if (front == nullptr)
-            return false;
-
-        QueueNode *temp = front;
-        id = front->id;
-        front = front->next;
-
-        if (front == nullptr)
-            rear = nullptr;
-
-        delete temp;
-        return true;
-    }
-
-    bool isEmpty() const
-    {
-        return front == nullptr;
-    }
-
-    ~Queue()
-    {
-        while (front != nullptr)
+        for (int i = 0; i < signalCount; ++i) 
         {
-            QueueNode *temp = front;
-            front = front->next;
-            delete temp;
+            cout << "Intersection: " << signals[i].intersection
+                 << ", Green Time: " << signals[i].greenTime << " seconds.\n";
         }
     }
 };
+//class to store congestion at every intersection
 class HashTable
 {
-private:
     Road *table[100] = {nullptr};
 
-    int hashFunction(const string &source, const string &destination)
+    //function to find hashing index for an intersection
+    int hashFunction(string source,string destination)
     {
         int hash = 0;
-        for (char c : source + destination)
-        {
-            hash = (hash * 31 + c) % 100;
-        }
+        char c = source[0];
+
+        hash = c % 100;
+    
         return hash;
     }
 
 public:
+    
+    //function to clear the hashing table
     void reset()
     {
-        for (int i = 0; i < 100; i++)
-        {
-            table[i] = nullptr;
-        }
+       for(int i = 0; i<100; i++)
+       {
+          table[i] = nullptr;
+       }
     }
 
+    //function to get count of cars at a road
     int getCount(string start, string end)
     {
-        int index = hashFunction(start, end);
+       int index = hashFunction(start, end);
         Road *current = table[index];
 
         while (current)
         {
             if (current->source == start && current->destination == end)
             {
-                return current->vehicleCount;
+                return current -> vehicleCount;
             }
             current = current->next;
         }
-
+        
         return 0;
     }
-    // Insert a road into the hash table
-    void insertRoad(const string &source, const string &destination)
+    
+    // function to insert road in the hash table
+    void insertRoad(string source,string destination)
     {
         int index = hashFunction(source, destination);
         Road *current = table[index];
@@ -289,7 +308,7 @@ public:
         table[index] = newRoad;
     }
 
-    // Increment vehicle count
+    // function to increase car count
     void incrementVehicleCount(const string &source, const string &destination)
     {
         int index = hashFunction(source, destination);
@@ -305,7 +324,7 @@ public:
         }
     }
 
-    // decrement vehicle count
+    // function to decrease car count
     void decrementVehicleCount(const string &source, const string &destination)
     {
         int index = hashFunction(source, destination);
@@ -323,23 +342,7 @@ public:
         }
     }
 
-    // Retrieve vehicle count
-    int getVehicleCount(const string &source, const string &destination)
-    {
-        int index = hashFunction(source, destination);
-        Road *current = table[index];
-        while (current)
-        {
-            if (current->source == source && current->destination == destination)
-            {
-                return current->vehicleCount;
-            }
-            current = current->next;
-        }
-        return -1; // Road not found
-    }
-
-    // Display congestion levels
+    // function to display congestion
     void displayCongestion()
     {
         for (int i = 0; i < 100; ++i)
@@ -354,68 +357,80 @@ public:
         }
     }
 };
-class TrafficSignalManager
+// class for queue for BFS
+class Queue
 {
-private:
-    TrafficSignal signals[26];
-    int signalCount;
+    struct QueueNode
+    {
+        string id;
+        QueueNode *next;
+
+        QueueNode(string id) : id(id), next(nullptr) {}
+    };
+
+    QueueNode *front;
+    QueueNode *rear;
 
 public:
-    TrafficSignalManager() : signalCount(0) {}
+    Queue() : front(nullptr), rear(nullptr) {}
 
-    TrafficSignal *getSignal(string name)
+    //function to enqueue
+    void enqueue(string id)
     {
-        for (int i = 0; i < 26; i++)
+        QueueNode *newNode = new QueueNode(id);
+        if (rear == nullptr)
         {
-            if (name == signals[i].intersection)
-                return &signals[i];
+            front = rear = newNode;
+            return;
         }
-
-        return NULL;
+        rear->next = newNode;
+        rear = newNode;
     }
-    // Parse traffic signal data
-    void parseTrafficSignals(const string &filename)
+    
+    //function to dequeue
+    bool dequeue(string &id)
     {
-        ifstream file(filename);
-        string line;
-        int i = 0;
-        while (getline(file, line))
-        {
+        if (front == nullptr)
+            return false;
 
-            if (i == 0)
-            {
-                i++;
-                continue;
-            }
-            stringstream ss(line);
-            string intersection;
-            int greenTime;
-            getline(ss, intersection, ',');
-            ss >> greenTime;
+        QueueNode *temp = front;
+        id = front->id;
+        front = front->next;
 
-            signals[signalCount++] = TrafficSignal(intersection, greenTime);
-        }
-        file.close();
+        if (front == nullptr)
+            rear = nullptr;
+
+        delete temp;
+        return true;
     }
 
-    // Display current signal timings
-    void displaySignals()
+    //function to check if queue is empty
+    bool isEmpty() const
     {
-        for (int i = 0; i < signalCount; ++i)
+        return front == nullptr;
+    }
+
+    ~Queue()
+    {
+        while (front != nullptr)
         {
-            cout << "Intersection: " << signals[i].intersection
-                 << ", Green Time: " << signals[i].greenTime << " seconds.\n";
+            QueueNode *temp = front;
+            front = front->next;
+            delete temp;
         }
     }
 };
+//class for overall traffic network
 class TrafficGraph
 {
+
     IntersectionNode *head;
     BlockedRoad *blockedRoads;
     HashTable h;
     TrafficSignalManager manager;
     MinHeap heap;
-
+    
+    //function to find intersection in the tree
     IntersectionNode *findIntersection(string name)
     {
         IntersectionNode *current = head;
@@ -429,7 +444,8 @@ class TrafficGraph
         }
         return nullptr;
     }
-
+    
+    //function to remove all roads from intersection
     void removeIncomingEdges(string nodeName)
     {
 
@@ -459,7 +475,8 @@ class TrafficGraph
             current = current->next;
         }
     }
-
+    
+    //helper function to get index for shortest path
     int getIndex(const string &name, NodeDistance nodes[], int nodeCount)
     {
         for (int i = 0; i < nodeCount; ++i)
@@ -469,7 +486,8 @@ class TrafficGraph
         }
         return -1;
     }
-
+    
+    //function to check if a road is blocked
     bool isRoadBlocked(string source, string destination)
     {
         BlockedRoad *current = blockedRoads;
@@ -485,10 +503,421 @@ class TrafficGraph
     }
 
 public:
-    TrafficGraph() : head(nullptr), blockedRoads(nullptr)
+
+    //constructor to read from files
+    TrafficGraph() : head(nullptr), blockedRoads(nullptr) 
     {
-        manager.parseTrafficSignals("traffic_signals.csv");
-        emergencyCSV("emergency_vehicles.csv");
+      manager.parseTrafficSignals("traffic_signals.csv");
+      emergencyCSV("emergency_vehicles.csv");
+    }
+
+    
+      //function to display signals with greentime
+      void TrafficSignalsStatus()
+      {
+        manager.displaySignals();
+      }
+    
+    //function to increase greentime of the quickest path for emergency vehicle
+     void shortestPath2(string start, string end, bool inp)
+    {
+        int INF = 1e9;
+
+        NodeDistance nodes[26];
+
+        int nodeCount = 0;
+        IntersectionNode *current = head;
+
+        while (current)
+        {
+            NodeDistance defaultNode(current->name, INF);
+            nodes[nodeCount++] = defaultNode;
+            current = current->next;
+        }
+
+        int startIndex = getIndex(start, nodes, nodeCount);
+
+        if (startIndex == -1)
+        {
+            return;
+        }
+
+        nodes[startIndex].distance = 0;
+
+        for (int i = 0; i < nodeCount; ++i)
+        {
+            int minDist = INF, u = -1;
+
+            for (int j = 0; j < nodeCount; ++j)
+            {
+                if (!nodes[j].visited && nodes[j].distance < minDist)
+                {
+                    minDist = nodes[j].distance;
+                    u = j;
+                }
+            }
+
+            if (u == -1)
+                break;
+
+            nodes[u].visited = true;
+
+            IntersectionNode *node = findIntersection(nodes[u].name);
+            EdgeNode *edge = node->edgeList;
+
+            while (edge)
+            {
+                if (isRoadBlocked(nodes[u].name, edge->destination))
+                {
+                    edge = edge->next;
+                    continue;
+                }
+
+                int neighborIndex = getIndex(edge->destination, nodes, nodeCount);
+                if (!nodes[neighborIndex].visited)
+                {
+                    int newDist = nodes[u].distance + edge->travelTime;
+                    if (newDist < nodes[neighborIndex].distance)
+                    {
+                        nodes[neighborIndex].distance = newDist;
+                        nodes[neighborIndex].parent = nodes[u].name;
+                    }
+                }
+                edge = edge->next;
+            }
+        }
+
+        int endIndex = getIndex(end, nodes, nodeCount);
+
+        if (endIndex == -1 || nodes[endIndex].distance == INF)
+        {
+        }
+        else
+        {
+            string path[26];
+            int pathIndex = 0;
+
+            string currentNode = end;
+
+            while (currentNode != start)
+            {
+                path[pathIndex++] = currentNode;
+                currentNode = nodes[getIndex(currentNode, nodes, nodeCount)].parent;
+            }
+            path[pathIndex++] = start;
+
+            for (int i = pathIndex - 1; i >= 0; --i)
+            {
+                if (inp)
+                {
+                    TrafficSignal * sig = manager.getSignal(path[i]);
+                    if(sig != NULL)
+                    sig -> greenTime += 30; 
+                }
+                else
+                {
+                    TrafficSignal * sig = manager.getSignal(path[i]);
+                    if(sig != NULL)
+                    sig -> greenTime -= 30;
+                }
+            }
+            
+            
+        }
+    }
+    
+     //function to let the highest priority vehicle pass from heap
+     void manageSignals() 
+     {
+          
+            HeapNode *road = heap.extractMin();
+            
+            shortestPath2(road->start, road->end,1);
+            cout<<"Timings Adjusted for Emergency Vehicle"<<endl;
+            manager.displaySignals();
+            shortestPath2(road->start, road->end,0);
+            cout<<"Timings Set back to Normal"<<endl;
+            manager.displaySignals();
+          
+     }
+    
+    
+      //function to read from emergency vehicles csv
+      void emergencyCSV(const string& filename) 
+      {
+        ifstream file(filename);
+        string line;
+        int i = 0;
+        while (getline(file, line)) {
+           
+            if(i == 0)
+            {
+              i++;
+              continue;
+            }
+            stringstream ss(line);
+            string name, src , end , priority;
+            
+            getline(ss,name, ',');
+            getline(ss,src, ',');
+            getline(ss,end,  ',');
+            getline(ss, priority,  ',');
+
+
+            heap.insert(name, src, end, priority);
+        }
+        file.close();
+    }
+    
+    
+    //function make way from BFS path and checking if congestion is high(to increase greentime)
+    void path(string previous[], const string &end)
+    {
+        if (previous[end[0] - 'A'] == "")
+        {
+            cout << end;
+            return;
+        }
+        
+        h.insertRoad( previous[end[0] - 'A'],end);
+        h.incrementVehicleCount(previous[end[0] - 'A'],end);
+        if(h.getCount(previous[end[0] - 'A'],end) >=5 && h.getCount(previous[end[0] - 'A'],end) <10)
+        {
+          TrafficSignal* sig = manager.getSignal(previous[end[0] - 'A']);
+          TrafficSignal* sig2 = manager.getSignal(end);
+          
+          sig -> greenTime += 80;
+          sig2 -> greenTime += 80;
+        }
+        else
+        if(h.getCount(previous[end[0] - 'A'],end) >=10)
+        {
+            TrafficSignal* sig = manager.getSignal(previous[end[0] - 'A']);
+            TrafficSignal* sig2 = manager.getSignal(end);
+          
+            sig -> greenTime += 100;
+            sig2 -> greenTime += 100;
+        }
+        
+        
+        path(previous, previous[end[0] - 'A']);
+        cout << end ;
+    
+    }
+
+    // BFS to find the path from start to end intersection
+    void BFS(const string &start, const string &end)
+    {
+        bool visited[256] = {false};
+        string previous[256];
+        int weight[256] = {0};
+
+        for (int i = 0; i < 256; i++)
+        {
+            previous[i] = "";
+            weight[i] = 0;
+        }
+
+        // Queue to explore intersections
+        Queue queue;
+
+        // Start BFS from the 'start' node
+        queue.enqueue(start);
+        visited[start[0] - 'A'] = true;
+
+        while (!queue.isEmpty())
+        {
+            string current;
+            if (!queue.dequeue(current))
+                continue;
+
+            // If we reach the destination, reduce vehicle count from dijkstra and add to BFS path
+            if (current == end)
+            {
+                shortestPath(start, end, 0);
+                path(previous, end);
+                return;
+            }
+
+            // Traverse the adjacent nodes (roads)
+            IntersectionNode *currentNode = findIntersection(current);
+            if (currentNode == nullptr)
+                continue;
+
+            EdgeNode *adj = currentNode->edgeList;
+            while (adj != nullptr)
+            {
+                int adjIndex = adj->destination[0] - 'A';
+                if (!visited[adjIndex] && !isRoadBlocked(current, adj->destination))
+                {
+                    queue.enqueue(adj->destination);
+                    visited[adjIndex] = true;
+                    previous[adjIndex] = current;                                 
+                    weight[adjIndex] = weight[current[0] - 'A'] + adj->travelTime;
+                }
+                adj = adj->next;
+            }
+        }
+
+        cout << "No path found from " << start << " to " << end << endl;
+    }
+
+    //function to add vehicle
+    void addVehicle(string src, string end)
+    {
+        shortestPath(src, end, 1);
+    }
+    
+    //function to display congestion at every signal
+    void totalCongestion()
+    {
+        h.displayCongestion();
+    }
+    
+    //function to add vehicles from the csv file
+    void processVehiclesCSV(const string &filePath)
+    {
+        ifstream file(filePath);
+        if (!file.is_open())
+        {
+            cout << "Error: Unable to open file " << filePath << endl;
+            return;
+        }
+
+        string line;
+        getline(file, line);
+        while (getline(file, line))
+        {
+            stringstream ss(line);
+            string vehicleName, start, end;
+
+            if (getline(ss, vehicleName, ',') &&
+                getline(ss, start, ',') &&
+                getline(ss, end, ','))
+            {
+
+                string st1, e1;
+                st1 = start[0];
+                e1 = end[0];
+
+                shortestPath(st1, e1, 1);
+            }
+            else
+            {
+                cout << "Error: Malformed CSV line: " << line << endl;
+            }
+        }
+
+        file.close();
+    }
+
+    //function to get shortest path for car. if path congestion is high it moves to BFS path
+    void shortestPath(string start, string end, bool inp)
+    {
+        int INF = 1e9;
+
+        NodeDistance nodes[26];
+
+        int nodeCount = 0;
+        IntersectionNode *current = head;
+
+        while (current)
+        {
+            NodeDistance defaultNode(current->name, INF);
+            nodes[nodeCount++] = defaultNode;
+            current = current->next;
+        }
+
+        int startIndex = getIndex(start, nodes, nodeCount);
+
+        if (startIndex == -1)
+        {
+            return;
+        }
+
+        nodes[startIndex].distance = 0;
+
+        for (int i = 0; i < nodeCount; ++i)
+        {
+            int minDist = INF, u = -1;
+
+            for (int j = 0; j < nodeCount; ++j)
+            {
+                if (!nodes[j].visited && nodes[j].distance < minDist)
+                {
+                    minDist = nodes[j].distance;
+                    u = j;
+                }
+            }
+
+            if (u == -1)
+                break;
+
+            nodes[u].visited = true;
+
+            IntersectionNode *node = findIntersection(nodes[u].name);
+            EdgeNode *edge = node->edgeList;
+
+            while (edge)
+            {
+                if (isRoadBlocked(nodes[u].name, edge->destination))
+                {
+                    edge = edge->next;
+                    continue;
+                }
+
+                int neighborIndex = getIndex(edge->destination, nodes, nodeCount);
+                if (!nodes[neighborIndex].visited)
+                {
+                    int newDist = nodes[u].distance + edge->travelTime;
+                    if (newDist < nodes[neighborIndex].distance)
+                    {
+                        nodes[neighborIndex].distance = newDist;
+                        nodes[neighborIndex].parent = nodes[u].name;
+                    }
+                }
+                edge = edge->next;
+            }
+        }
+
+        int endIndex = getIndex(end, nodes, nodeCount);
+
+        if (endIndex == -1 || nodes[endIndex].distance == INF)
+        {
+        }
+        else
+        {
+            string path[26];
+            int pathIndex = 0;
+
+            string currentNode = end;
+
+            while (currentNode != start)
+            {
+                path[pathIndex++] = currentNode;
+                currentNode = nodes[getIndex(currentNode, nodes, nodeCount)].parent;
+            }
+            path[pathIndex++] = start;
+
+            for (int i = pathIndex - 1; i >= 0; --i)
+            {
+                if (inp)
+                {
+                    h.insertRoad(path[i], path[i - 1]);
+                    h.incrementVehicleCount(path[i], path[i - 1]);
+                    if(h.getCount(path[i], path[i - 1]) >= 5)
+                    {
+                       BFS(start, end);
+                    }
+                
+                }
+                else
+                {
+                    h.insertRoad(path[i], path[i - 1]);
+                    h.decrementVehicleCount(path[i], path[i - 1]);
+                }
+            }
+        }
     }
 
     ~TrafficGraph()
@@ -509,33 +938,8 @@ public:
             delete temp;
         }
     }
-
-    void emergencyCSV(const string &filename)
-    {
-        ifstream file(filename);
-        string line;
-        int i = 0;
-        while (getline(file, line))
-        {
-
-            if (i == 0)
-            {
-                i++;
-                continue;
-            }
-            stringstream ss(line);
-            string name, src, end, priority;
-
-            getline(ss, name, ',');
-            getline(ss, src, ',');
-            getline(ss, end, ',');
-            getline(ss, priority, ',');
-
-            heap.insert(name, src, end, priority);
-        }
-        file.close();
-    }
-
+  
+    //function to add intersection
     void addIntersection(string name)
     {
         if (findIntersection(name) == nullptr)
@@ -557,6 +961,7 @@ public:
         }
     }
 
+    //function to add road
     void addRoad(string source, string destination, int travelTime)
     {
 
@@ -595,7 +1000,8 @@ public:
             delete temp;
         }
     }
-
+   
+    //function to remove intersection
     void removeIntersection(string name)
     {
         removeIncomingEdges(name);
@@ -631,6 +1037,7 @@ public:
         }
     }
 
+    //function to remove road
     void removeRoad(string source, string destination)
     {
         IntersectionNode *sourceNode = findIntersection(source);
@@ -660,6 +1067,42 @@ public:
         }
     }
 
+    //function to read blocked road csv 
+    void blockRoadCSV(string source, string destination, string status = "Blocked")
+    {
+        IntersectionNode *sourceNode = findIntersection(source);
+        if (sourceNode == nullptr)
+        {
+            cout << "Error: Source intersection " << source << " does not exist." << endl;
+            return;
+        }
+
+        EdgeNode *edge = sourceNode->edgeList;
+        bool roadExists = false;
+
+        while (edge)
+        {
+            if (edge->destination == destination)
+            {
+                roadExists = true;
+                break;
+            }
+            edge = edge->next;
+        }
+
+        if (roadExists)
+        {
+            BlockedRoad *newBlockedRoad = new BlockedRoad(source, destination, status);
+            newBlockedRoad->next = blockedRoads;
+            blockedRoads = newBlockedRoad;
+
+            newBlockedRoad = new BlockedRoad(destination, source, status);
+            newBlockedRoad->next = blockedRoads;
+            blockedRoads = newBlockedRoad;
+        }
+    }
+
+    //function to block road
     void blockRoad(string source, string destination, string status = "Blocked")
     {
         IntersectionNode *sourceNode = findIntersection(source);
@@ -695,81 +1138,9 @@ public:
         else
             cout << "Road does not exist from " << source << " to " << destination << endl;
     }
-
-    // Helper function to print the path from start to end
-    void path(string previous[], const string &end)
-    {
-        if (previous[end[0] - 'A'] == "")
-        {
-            cout << end;
-            return;
-        }
-
-        h.insertRoad(previous[end[0] - 'A'], end);
-        h.incrementVehicleCount(previous[end[0] - 'A'], end);
-
-        path(previous, previous[end[0] - 'A']);
-        cout << end;
-    }
-
-    // BFS to find the path from start to end intersection
-    void BFS(const string &start, const string &end)
-    {
-        // Arrays to track visited intersections, previous intersections and total weight of the path
-        bool visited[256] = {false};
-        string previous[256];
-        int weight[256] = {0};
-
-        for (int i = 0; i < 256; i++)
-        {
-            previous[i] = "";
-            weight[i] = 0;
-        }
-
-        // Queue to explore intersections
-        Queue queue;
-
-        // Start BFS from the 'start' node
-        queue.enqueue(start);
-        visited[start[0] - 'A'] = true;
-
-        while (!queue.isEmpty())
-        {
-            string current;
-            if (!queue.dequeue(current))
-                continue;
-
-            // If we reach the destination, print the path and total weight
-            if (current == end)
-            {
-                shortestPath(start, end, 0);
-                path(previous, end);
-                return;
-            }
-
-            // Traverse the adjacent nodes (roads)
-            IntersectionNode *currentNode = findIntersection(current);
-            if (currentNode == nullptr)
-                continue;
-
-            EdgeNode *adj = currentNode->edgeList;
-            while (adj != nullptr)
-            {
-                int adjIndex = adj->destination[0] - 'A';
-                if (!visited[adjIndex] && !isRoadBlocked(current, adj->destination))
-                {
-                    queue.enqueue(adj->destination);
-                    visited[adjIndex] = true;
-                    previous[adjIndex] = current;
-                    weight[adjIndex] = weight[current[0] - 'A'] + adj->travelTime;
-                }
-                adj = adj->next;
-            }
-        }
-
-        cout << "No path found from " << start << " to " << end << endl;
-    }
-
+    
+    
+    //function to display the whole traffic network
     void displayNetwork()
     {
         IntersectionNode *current = head;
@@ -787,7 +1158,8 @@ public:
             current = current->next;
         }
     }
-
+    
+    //function to load network from file
     void loadFromCSV(string filename)
     {
         ifstream file(filename);
@@ -816,7 +1188,8 @@ public:
         }
         file.close();
     }
-
+    
+    //function to load road blocks from csv
     void loadDisruptions(const string &filename)
     {
         ifstream file(filename);
@@ -839,12 +1212,13 @@ public:
 
             if (status == "Blocked" || status == "Under Repair")
             {
-                blockRoad(source, destination, status);
+                blockRoadCSV(source, destination, status);
             }
         }
         file.close();
     }
-
+    
+    //function to get the shortest path. It considers road blocks as well
     void shortestPathdijkstra(string start, string end)
     {
         int INF = 1e9;
@@ -947,7 +1321,8 @@ public:
             cout << endl;
         }
     }
-
+    
+    //function to print road blocks
     void printBlockedRoads()
     {
         if (blockedRoads == nullptr)
@@ -968,151 +1343,54 @@ public:
                 current = nullptr;
         }
     }
+    
+    //function to print signals
     void printSignal()
     {
-        manager.displaySignals();
+      manager.displaySignals();
     }
+    
+    //function to reset hashtable
     void resetHash()
     {
-        h.reset();
+      h.reset();
     }
-
-    void shortestPath(string start, string end, bool inp)
+    
+    //function to add priority vehicle to the heap
+    void insertVehicleWithPriority(string name, string start, string end, string priority)
     {
-        int INF = 1e9;
-
-        NodeDistance nodes[26];
-
-        int nodeCount = 0;
-        IntersectionNode *current = head;
-
-        while (current)
-        {
-            NodeDistance defaultNode(current->name, INF);
-            nodes[nodeCount++] = defaultNode;
-            current = current->next;
-        }
-
-        int startIndex = getIndex(start, nodes, nodeCount);
-
-        if (startIndex == -1)
-        {
-            return;
-        }
-
-        nodes[startIndex].distance = 0;
-
-        for (int i = 0; i < nodeCount; ++i)
-        {
-            int minDist = INF, u = -1;
-
-            for (int j = 0; j < nodeCount; ++j)
-            {
-                if (!nodes[j].visited && nodes[j].distance < minDist)
-                {
-                    minDist = nodes[j].distance;
-                    u = j;
-                }
-            }
-
-            if (u == -1)
-                break;
-
-            nodes[u].visited = true;
-
-            IntersectionNode *node = findIntersection(nodes[u].name);
-            EdgeNode *edge = node->edgeList;
-
-            while (edge)
-            {
-                if (isRoadBlocked(nodes[u].name, edge->destination))
-                {
-                    edge = edge->next;
-                    continue;
-                }
-
-                int neighborIndex = getIndex(edge->destination, nodes, nodeCount);
-                if (!nodes[neighborIndex].visited)
-                {
-                    int newDist = nodes[u].distance + edge->travelTime;
-                    if (newDist < nodes[neighborIndex].distance)
-                    {
-                        nodes[neighborIndex].distance = newDist;
-                        nodes[neighborIndex].parent = nodes[u].name;
-                    }
-                }
-                edge = edge->next;
-            }
-        }
-
-        int endIndex = getIndex(end, nodes, nodeCount);
-
-        if (endIndex == -1 || nodes[endIndex].distance == INF)
-        {
-        }
-        else
-        {
-            string path[26];
-            int pathIndex = 0;
-
-            string currentNode = end;
-
-            while (currentNode != start)
-            {
-                path[pathIndex++] = currentNode;
-                currentNode = nodes[getIndex(currentNode, nodes, nodeCount)].parent;
-            }
-            path[pathIndex++] = start;
-
-            for (int i = pathIndex - 1; i >= 0; --i)
-            {
-                if (inp)
-                {
-                    h.insertRoad(path[i], path[i - 1]);
-                    h.incrementVehicleCount(path[i], path[i - 1]);
-                    if (h.getCount(path[i], path[i - 1]) >= 5)
-                    {
-                        BFS(start, end);
-                    }
-                }
-                else
-                {
-                    h.insertRoad(path[i], path[i - 1]);
-                    h.decrementVehicleCount(path[i], path[i - 1]);
-                }
-            }
-        }
+      heap.insert(name, start, end, priority);
     }
-    void findAllPaths(const string &current, const string &end, bool visited[], string path[], int &pathIndex, int currentWeight)
+    
+    //function to calculate all possible paths
+    void findAllPaths(const string& current, const string& end, bool visited[], string path[], int& pathIndex, int currentWeight) 
     {
-        // Mark the current node as visited and add it to the path
         visited[current[0] - 'A'] = true;
         path[pathIndex] = current;
         pathIndex++;
 
         // If we reach the destination, print the path and total weight
-        if (current == end)
+        if (current == end) 
         {
             cout << "Path: ";
-            for (int i = 0; i < pathIndex; i++)
+            for (int i = 0; i < pathIndex; i++) 
             {
                 cout << path[i];
-                if (i < pathIndex - 1)
-                    cout << " -> ";
+                if (i < pathIndex - 1) cout << " -> ";
             }
             cout << " | Total Weight: " << currentWeight << endl;
-        }
-        else
+        } 
+        else 
         {
-            // Explore all adjacent nodes
-            IntersectionNode *currentNode = findIntersection(current);
-            if (currentNode)
+            // exploring all adjacent nodes
+            IntersectionNode* currentNode = findIntersection(current);
+            if (currentNode) 
             {
-                EdgeNode *adj = currentNode->edgeList;
-                while (adj != nullptr)
+                EdgeNode* adj = currentNode->edgeList;
+                while (adj != nullptr) 
                 {
                     int adjIndex = adj->destination[0] - 'A';
-                    if (!visited[adjIndex] && !isRoadBlocked(current, adj->destination))
+                    if (!visited[adjIndex] && !isRoadBlocked(current, adj->destination)) 
                     {
                         findAllPaths(adj->destination, end, visited, path, pathIndex, currentWeight + adj->travelTime);
                     }
@@ -1124,158 +1402,19 @@ public:
         visited[current[0] - 'A'] = false;
         pathIndex--;
     }
-
-    void printAll(const string &start, const string &end)
-    {
-        string path[256];            // Array to store the current path
-        bool visited[256] = {false}; // Track visited nodes
-        int pathIndex = 0;           // Index for the current path
+    
+     // helper to print all paths
+     void printAll(const string& start, const string& end) 
+     {
+        string path[256]; 
+        bool visited[256] = {false};
+        int pathIndex = 0; 
         findAllPaths(start, end, visited, path, pathIndex, 0);
     }
+    
 
-    void shortestPath2(string start, string end, bool inp)
-    {
-        int INF = 1e9;
-
-        NodeDistance nodes[26];
-
-        int nodeCount = 0;
-        IntersectionNode *current = head;
-
-        while (current)
-        {
-            NodeDistance defaultNode(current->name, INF);
-            nodes[nodeCount++] = defaultNode;
-            current = current->next;
-        }
-
-        int startIndex = getIndex(start, nodes, nodeCount);
-
-        if (startIndex == -1)
-        {
-            return;
-        }
-
-        nodes[startIndex].distance = 0;
-
-        for (int i = 0; i < nodeCount; ++i)
-        {
-            int minDist = INF, u = -1;
-
-            for (int j = 0; j < nodeCount; ++j)
-            {
-                if (!nodes[j].visited && nodes[j].distance < minDist)
-                {
-                    minDist = nodes[j].distance;
-                    u = j;
-                }
-            }
-
-            if (u == -1)
-                break;
-
-            nodes[u].visited = true;
-
-            IntersectionNode *node = findIntersection(nodes[u].name);
-            EdgeNode *edge = node->edgeList;
-
-            while (edge)
-            {
-                if (isRoadBlocked(nodes[u].name, edge->destination))
-                {
-                    edge = edge->next;
-                    continue;
-                }
-
-                int neighborIndex = getIndex(edge->destination, nodes, nodeCount);
-                if (!nodes[neighborIndex].visited)
-                {
-                    int newDist = nodes[u].distance + edge->travelTime;
-                    if (newDist < nodes[neighborIndex].distance)
-                    {
-                        nodes[neighborIndex].distance = newDist;
-                        nodes[neighborIndex].parent = nodes[u].name;
-                    }
-                }
-                edge = edge->next;
-            }
-        }
-
-        int endIndex = getIndex(end, nodes, nodeCount);
-
-        if (endIndex == -1 || nodes[endIndex].distance == INF)
-        {
-        }
-        else
-        {
-            string path[26];
-            int pathIndex = 0;
-
-            string currentNode = end;
-
-            while (currentNode != start)
-            {
-                path[pathIndex++] = currentNode;
-                currentNode = nodes[getIndex(currentNode, nodes, nodeCount)].parent;
-            }
-            path[pathIndex++] = start;
-
-            for (int i = pathIndex - 1; i >= 0; --i)
-            {
-                if (inp)
-                {
-                    TrafficSignal *sig = manager.getSignal(path[i]);
-                    if (sig != NULL)
-                        sig->greenTime += 30;
-                }
-                else
-                {
-                    TrafficSignal *sig = manager.getSignal(path[i]);
-                    if (sig != NULL)
-                        sig->greenTime -= 30;
-                }
-            }
-        }
-    }
-
-    void manageSignals()
-    {
-
-        HeapNode *road = heap.extractMin();
-
-        shortestPath2(road->start, road->end, 1);
-        cout << "Timings Adjusted for Emergency Vehicle" << endl;
-        manager.displaySignals();
-        shortestPath2(road->start, road->end, 0);
-        cout << "Timings Set back to Normal" << endl;
-        manager.displaySignals();
-    }
-
-    void TrafficSignalsStatus()
-    {  
-        ifstream signalFile("traffic_signals.csv");
-	if (!signalFile.is_open()) {
-	    cout << "Error: Could not open traffic_signals.csv\n";
-	    return;
-	}
-
-	string line;
-	getline(signalFile, line); 
-	while (getline(signalFile, line)) {
-	stringstream ss(line);
-	string intersection, greenTimeStr;
-	getline(ss, intersection, ',');
-	getline(ss, greenTimeStr, ',');
-
-
-        cout << "Intersection " << intersection << " Green Time: " << greenTimeStr<<endl;
-    }
-	    
-	signalFile.close();
-	cout<<endl<<endl;
-    }
+   
 };
-
 int main()
 {
     TrafficGraph trafficGraph;
