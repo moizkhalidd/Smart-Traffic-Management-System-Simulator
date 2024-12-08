@@ -240,7 +240,32 @@ public:
         }
     }
 
+    void emergencyCSV(const string& filename) {
+        ifstream file(filename);
+        string line;
+        int i = 0;
+        while (getline(file, line)) {
+           
+            if(i == 0)
+            {
+              i++;
+              continue;
+            }
+            stringstream ss(line);
+            string name, src , end , priority;
+            
+            getline(ss,name, ',');
+            getline(ss,src, ',');
+            getline(ss,end,  ',');
+            getline(ss, priority,  ',');
 
+
+            heap.insert(name, src, end, priority);
+        }
+        file.close();
+    }
+
+ 
     void addIntersection(string name) 
     {
         if (findIntersection(name) == nullptr)
