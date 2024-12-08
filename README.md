@@ -63,6 +63,53 @@ The **Shortest Path** feature utilizes **Dijkstra's Algorithm** to find the most
 
 The **Traffic Management System** provides a comprehensive solution for optimizing traffic flow in smart cities. By utilizing real-time data, advanced algorithms, and dynamic control mechanisms, the system helps improve safety, reduce congestion, and enhance overall efficiency in urban transportation. This system is scalable and adaptable to handle the complexities of modern cities, making it a critical tool for managing urban mobility effectively.
 
+# Running C++ Code on Ubuntu
+
+## Prerequisites
+1. **Ensure `g++` is installed:**
+   - Open a terminal and run:
+     ```bash
+     g++ --version
+     ```
+   - If `g++` is not installed, install it using:
+     ```bash
+     sudo apt update
+     sudo apt install g++
+     ```
+
+## Steps to Run the Program
+
+### 1. Open Terminal
+   - Use `Ctrl + Alt + T` to open a terminal.
+
+### 2. Navigate to the Directory
+   - Use the `cd` command to navigate to the directory where the `.cpp` file is stored:
+     ```bash
+     cd /path/to/your/code
+     ```
+
+### 3. Compile the Code
+   - Run the following command to compile the code:
+     ```bash
+     g++ -o output_filename your_code_file.cpp
+     ```
+   - Replace `output_filename` with the name of the compiled program, and `your_code_file.cpp` with the name of your source file.
+
+   - **Example:**
+     ```bash
+     g++ -o my_program example.cpp
+     ```
+
+### 4. Run the Program
+   - Execute the compiled program using:
+     ```bash
+     ./output_filename
+     ```
+   - **Example:**
+     ```bash
+     ./my_program
+     ```
+
 ## Simulation Dashboard
 
 ![image](https://github.com/user-attachments/assets/d1d0b459-c922-40c5-aea5-6f84e2908ff5)
