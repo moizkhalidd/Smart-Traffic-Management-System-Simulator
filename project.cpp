@@ -1276,32 +1276,37 @@ public:
     }
 };
 
-int main() {
-    
+int main()
+{
     TrafficGraph trafficGraph;
+
     trafficGraph.loadFromCSV("road_network.csv");
+    trafficGraph.loadDisruptions("road_closures.csv");
     trafficGraph.processVehiclesCSV("vehicles.csv");
-    
-    
+     
     int choice;
     bool flag = true;
     while(flag == true)
     {
     	cout<<"------SIMULATION DASHBOARD------"<<endl;
-    	cout<<"1. Display City Traffic Network"<<endl;
-    	cout<<"2. Display Traffic Signal Status"<<endl;
-    	cout<<"3. Display Congestion Status"<<endl;
-    	cout<<"4. Display Blocked Roads"<<endl;
-    	cout<<"5. Handle Emergency Vehicle Routing"<<endl;
-    	cout<<"6. Block Road due to Accident"<<endl;
-    	cout<<"7. Simulate Vehicle Routing"<<endl;
-    	cout<<"8. Exit Simulation"<<endl;
+    	cout<<"1.  Display City Traffic Network"<<endl;
+    	cout<<"2.  Display Traffic Signal Status"<<endl;
+    	cout<<"3.  Display Congestion Status"<<endl;
+    	cout<<"4.  Display Blocked Roads"<<endl;
+    	cout<<"5.  Handle Emergency Vehicle Routing"<<endl;
+    	cout<<"6.  Block Road due to Accident"<<endl;
+    	cout<<"7.  Simulate Vehicle Routing"<<endl;
+    	cout<<"8.  Add Vehicle"<<endl;
+    	cout<<"9.  Manage Signals"<<endl;
+    	cout<<"10. Add Priority Vehicle"<<endl;
+    	cout<<"11. Shortest Path"<<endl;
+    	cout<<"12. Exit Simulation"<<endl;
     	cout<<endl;
     	cout<<"Enter your choice: ";
     	
     	cin>>choice;
     	
-    	while (choice > 8 || choice < 1)
+    	while (choice > 12 || choice < 1)
     	{
     		cout<<"Invalid Input!"<<endl;
     		cout<<"Enter Valid Option: ";
@@ -1312,24 +1317,27 @@ int main() {
     	{
     		case 1:
     		{
-    			    trafficGraph.displayNetwork();
-    			    cout << endl;
-    			    break;
+    		     cout<<"------City Traffic Network------"<<endl;
+    		     trafficGraph.displayNetwork();
+    		     cout << endl;
+    		     break;
     		}
     		case 2:
     		{
     			cout<<"------Traffic Signal Status------"<<endl;
-                trafficGraph.TrafficSignalsStatus();
+    			trafficGraph.TrafficSignalsStatus();
     			break;
     		}
     		case 3:
     		{
     			cout<<"------Congestion status------"<<endl;
+    			trafficGraph.totalCongestion();
     			break;
     		}
     		case 4:
     		{
     			cout<<"------Blocked Roads------"<<endl;
+    			trafficGraph.printBlockedRoads();
     			break;
     		}
     		case 5:
@@ -1357,6 +1365,9 @@ int main() {
     			cin>>st;
     			cout<<"Enter The End Intersection of the road you want to block: ";
     			cin>>e;
+    			trafficGraph.blockRoad(st, e);
+    			trafficGraph.resetHash();
+    			trafficGraph.processVehiclesCSV("vehicles.csv");
     			break;
     		}
     		case 7:
@@ -1367,10 +1378,66 @@ int main() {
     			cin>>st;
     			cout<<"Enter The End Intersection: ";
     			cin>>e;
-    			cout<<"All Possible paths from "<< st <<"to "<<e<<"are: "<<endl;
+    			cout<<"All Possible paths from "<< st <<" to "<<e<<" are: "<<endl;
+    			trafficGraph.printAll(st,e);
     			break;
     		}
     		case 8:
+    		{
+    		        string st , e;
+    			cout<<"------Add Vehicle------"<<endl;
+    			cout<<"Enter The start Intersection: ";
+    			cin>>st;
+    			cout<<"Enter The End Intersection: ";
+    			cin>>e;
+    			trafficGraph.addVehicle(st,e);
+    			break;
+    			
+    		}
+    		case 9:
+    		{       
+    		        cout<<"------Manage Signal for Highest Priority------"<<endl;
+    			trafficGraph.manageSignals();
+    			break;
+    		}
+    		case 10:
+    		{
+    		        string st , e, name, pr;
+    		        int p = -5;
+    		        cout<<"------Add Priority Vehicle------"<<endl;
+    		        cout<<"Enter Car ID: ";
+    			cin>>name;
+    			cout<<"Enter The start Intersection: ";
+    			cin>>st;
+    			cout<<"Enter The End Intersection: ";
+    			cin>>e;
+    			cout<<"Enter 1)High 2)Medium 3)Low priority: "<<endl;
+    			
+    			while(p<= 0 || p>3)
+    			cin>>p;
+    			
+    			if(p == 1)
+    			pr = "High";
+    			else if(p == 2)
+    			pr = "Medium";
+    			else
+    			pr = "Low";
+    			
+    			trafficGraph.insertVehicleWithPriority(name, st, e,pr);
+    			break;
+    		}
+    		case 11:
+    		{
+    			cout<<"------Shortest Path------"<<endl;
+                        string st , e;
+    			cout<<"Enter The start Intersection: ";
+    			cin>>st;
+    			cout<<"Enter The End Intersection: ";
+    			cin>>e;
+    			trafficGraph.shortestPathdijkstra(st,e);
+    			break;
+    		}
+    		case 12:
     		{
     			cout<<"Exiting The Simulation!"<<endl;
     			flag = false;
@@ -1379,5 +1446,7 @@ int main() {
     	}
     	
     } 
+     
+
     return 0;
 }
