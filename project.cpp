@@ -633,6 +633,22 @@ public:
             cout << "Road does not exist from " << source << " to " << destination << endl;
     }
 
+    // Helper function to print the path from start to end
+    void path(string previous[], const string &end)
+    {
+        if (previous[end[0] - 'A'] == "")
+        {
+            cout << end;
+            return;
+        }
+
+        h.insertRoad(previous[end[0] - 'A'], end);
+        h.incrementVehicleCount(previous[end[0] - 'A'], end);
+
+        path(previous, previous[end[0] - 'A']);
+        cout << end;
+    }
+
     // BFS to find the path from start to end intersection
     void BFS(const string &start, const string &end)
     {
