@@ -133,6 +133,11 @@ The **Traffic Management System** provides a comprehensive solution for optimizi
 
 ![image](https://github.com/user-attachments/assets/19657cb7-a12c-4c07-8748-b7070ce9bedd)
 
+## Add Intersection
+
+![image](https://github.com/user-attachments/assets/8498cd29-92e0-464f-8d9a-9cb65a34e32d)
+
+
 **Display after removal**
 
 ![image](https://github.com/user-attachments/assets/3c0a0362-6af3-4d31-9845-77a0522d196a)
