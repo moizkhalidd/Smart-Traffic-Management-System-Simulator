@@ -1412,6 +1412,30 @@ public:
         }
         return false;
     }
+
+    void TrafficSignalsStatus()
+    {  
+        ifstream signalFile("traffic_signals.csv");
+	if (!signalFile.is_open()) {
+	    cout << "Error: Could not open traffic_signals.csv\n";
+	    return;
+	}
+
+	string line;
+	getline(signalFile, line); 
+	while (getline(signalFile, line)) {
+	stringstream ss(line);
+	string intersection, greenTimeStr;
+	getline(ss, intersection, ',');
+	getline(ss, greenTimeStr, ',');
+
+
+        cout << "Intersection " << intersection << " Green Time: " << greenTimeStr<<endl;
+    }
+	    
+	signalFile.close();
+	cout<<endl<<endl;
+    }
 };
 
 int main() {
@@ -1457,6 +1481,7 @@ int main() {
     		case 2:
     		{
     			cout<<"------Traffic Signal Status------"<<endl;
+                trafficGraph.TrafficSignalsStatus();
     			break;
     		}
     		case 3:
