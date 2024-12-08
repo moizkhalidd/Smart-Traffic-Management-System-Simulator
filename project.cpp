@@ -822,6 +822,20 @@ public:
             
         }
     }
+
+     void manageSignals() 
+     {
+          
+            HeapNode *road = heap.extractMin();
+            
+            shortestPath2(road->start, road->end,1);
+            cout<<"Timings Adjusted for Emergency Vehicle"<<endl;
+            manager.displaySignals();
+            shortestPath2(road->start, road->end,0);
+            cout<<"Timings Set back to Normal"<<endl;
+            manager.displaySignals();
+          
+     }
 };
 
 int main() {
