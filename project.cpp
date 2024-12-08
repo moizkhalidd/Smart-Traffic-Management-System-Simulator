@@ -1417,8 +1417,10 @@ public:
 };
 int main()
 {
+    //traffic network object
     TrafficGraph trafficGraph;
-
+    
+    //loading data from csv
     trafficGraph.loadFromCSV("road_network.csv");
     trafficGraph.loadDisruptions("road_closures.csv");
     trafficGraph.processVehiclesCSV("vehicles.csv");
@@ -1554,7 +1556,7 @@ int main()
     			cin>>st;
     			cout<<"Enter The End Intersection: ";
     			cin>>e;
-    			cout<<"Enter 1)High 2)Medium 3)Low priority: "<<endl;
+    			cout<<"Enter 1)High 2)Medium 3)Low priority: ";
     			
     			while(p<= 0 || p>3)
     			cin>>p;
@@ -1575,9 +1577,16 @@ int main()
     		        cout<<"------Add Intersection------"<<endl;
     		        cout<<"Enter The Intersection: ";
     			cin>>st;
-    			trafficGraph.addIntersection(st);
-    			trafficGraph.resetHash();
-    			trafficGraph.processVehiclesCSV("vehicles.csv");
+    			if(st[0] >= 'A' && st[0] <= 'Z')
+    			{
+    			 trafficGraph.addIntersection(st);
+    			 trafficGraph.resetHash();
+    			 trafficGraph.processVehiclesCSV("vehicles.csv");
+    			}
+    			else
+    			{
+    			    cout<<"Invalid Input. Please enter from A-Z"<<endl;
+    			}
     			break;
     		}
     		case 12:
@@ -1590,11 +1599,16 @@ int main()
     			cin>>st;
     			cout<<"Enter The End Intersection: ";
     			cin>>e;
-    			cout<<"Enter Travel Time: "<<endl;
+    			cout<<"Enter Travel Time: ";
     			cin>>t;
-    			trafficGraph.addRoad(st,e,t);
-    			trafficGraph.resetHash();
-    			trafficGraph.processVehiclesCSV("vehicles.csv");
+    			if(st[0] >= 'A' && st[0] <= 'Z' && e[0] >= 'A' && e[0] <= 'Z')
+    			{
+    			  trafficGraph.addRoad(st,e,t);
+    			  trafficGraph.resetHash();
+    			  trafficGraph.processVehiclesCSV("vehicles.csv");
+    			}
+    			else
+    			cout<<"Invalid Input. Please enter from A-Z"<<endl;
     			break;
     		}
     		case 13:
@@ -1603,9 +1617,14 @@ int main()
     		        cout<<"------Remove Intersection------"<<endl;
     		        cout<<"Enter The Intersection: ";
     			cin>>st;
-    			trafficGraph.removeIntersection(st);
-    			trafficGraph.resetHash();
-    			trafficGraph.processVehiclesCSV("vehicles.csv");
+    			if(st[0] >= 'A' && st[0] <= 'Z')
+    			{
+        			trafficGraph.removeIntersection(st);
+        			trafficGraph.resetHash();
+        			trafficGraph.processVehiclesCSV("vehicles.csv");
+        		}
+        		else
+        		cout<<"Invalid Input. Please enter from A-Z"<<endl;
     			break;
     		}
     		case 14:
@@ -1616,9 +1635,14 @@ int main()
     			cin>>st;
     			cout<<"Enter The End Intersection: ";
     			cin>>e;	
-    			trafficGraph.removeRoad(st,e);
-    			trafficGraph.resetHash();
-    			trafficGraph.processVehiclesCSV("vehicles.csv");
+    			if(st[0] >= 'A' && st[0] <= 'Z' && e[0] >= 'A' && e[0] <= 'Z')
+    			{
+        			trafficGraph.removeRoad(st,e);
+        			trafficGraph.resetHash();
+        			trafficGraph.processVehiclesCSV("vehicles.csv");
+        		}
+        		else
+        		cout<<"Invalid Input. Please enter from A-Z"<<endl;
     			break;
     		}
     		case 15:
@@ -1642,6 +1666,5 @@ int main()
     	
     } 
      
-
     return 0;
 }
