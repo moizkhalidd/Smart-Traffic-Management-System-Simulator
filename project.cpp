@@ -1454,7 +1454,18 @@ int main()
     			trafficGraph.processVehiclesCSV("vehicles.csv");
     			break;
     		}
-    		case 13:
+		case 13:
+    		{
+    			string st ;
+    		        cout<<"------Remove Intersection------"<<endl;
+    		        cout<<"Enter The Intersection: ";
+    			cin>>st;
+    			trafficGraph.removeIntersection(st);
+    			trafficGraph.resetHash();
+    			trafficGraph.processVehiclesCSV("vehicles.csv");
+    			break;
+    		}
+    		case 14:
     		{
     			cout<<"Exiting The Simulation!"<<endl;
     			flag = false;
