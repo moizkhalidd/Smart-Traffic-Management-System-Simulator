@@ -65,7 +65,8 @@ The **Traffic Management System** provides a comprehensive solution for optimizi
 
 ## Simulation Dashboard
 
-![Screenshot 2024-12-08 143030](https://github.com/user-attachments/assets/4400a113-9b17-4166-8afa-fae950b0c9ec)
+![image](https://github.com/user-attachments/assets/d1d0b459-c922-40c5-aea5-6f84e2908ff5)
+
 ## Display City Traffic Network
 
 ![image](https://github.com/user-attachments/assets/ba45a818-05fe-46e6-acae-f818dabfd503)
@@ -107,4 +108,34 @@ The **Traffic Management System** provides a comprehensive solution for optimizi
 **Diplaying addition of vehicle** 
 
 ![image](https://github.com/user-attachments/assets/32df13d2-a493-4098-ae77-978297402ab5)
+
+## Manage Signals 
+
+![image](https://github.com/user-attachments/assets/cc0fae43-3130-4293-9494-3b888e5c7a42)
+
+![image](https://github.com/user-attachments/assets/cbb7bb37-c1ca-41fc-a297-f72392af9067)
+
+## Add Priority Vehicle
+
+![image](https://github.com/user-attachments/assets/955fdc43-db6f-4f3a-b7bb-481e6d8cc47c)
+
+## Add Intersection
+
+
+## Add Road
+
+![image](https://github.com/user-attachments/assets/cbf7fe2a-c2c5-4fa8-8c59-6f57a3c5d414)
+
+
+**After road addition**
+
+![image](https://github.com/user-attachments/assets/77505b31-469a-4e87-90af-f253a9314bb2)
+
+## Remove Intersection
+
+![image](https://github.com/user-attachments/assets/19657cb7-a12c-4c07-8748-b7070ce9bedd)
+
+**Display after removal**
+
+![image](https://github.com/user-attachments/assets/3c0a0362-6af3-4d31-9845-77a0522d196a)
 
