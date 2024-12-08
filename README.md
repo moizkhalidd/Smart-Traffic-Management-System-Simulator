@@ -112,7 +112,7 @@ The **Traffic Management System** provides a comprehensive solution for optimizi
 
 ## Simulation Dashboard
 
-![image](https://github.com/user-attachments/assets/d1d0b459-c922-40c5-aea5-6f84e2908ff5)
+![simulation](https://github.com/user-attachments/assets/cd1b55a3-d6ab-4cdc-a77a-e6ee2329f104)
 
 ## Display City Traffic Network
 
