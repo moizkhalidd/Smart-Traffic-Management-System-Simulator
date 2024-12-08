@@ -1130,6 +1130,13 @@ public:
         cout << "Timings Set back to Normal" << endl;
         manager.displaySignals();
     }
+
+    void emergencyRouting(const string& start, const string& goal)
+    {
+    	 cout << "Calculating shortest path...\n";
+    	    shortestPathdijkstra(start, goal);
+    	 
+    }
 };
 
 int main()
