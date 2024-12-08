@@ -608,6 +608,113 @@ public:
               current = nullptr;
           }
     }
+
+    void shortestPath(string start, string end, bool inp)
+    {
+        int INF = 1e9;
+
+        NodeDistance nodes[26];
+
+        int nodeCount = 0;
+        IntersectionNode *current = head;
+
+        while (current)
+        {
+            NodeDistance defaultNode(current->name, INF);
+            nodes[nodeCount++] = defaultNode;
+            current = current->next;
+        }
+
+        int startIndex = getIndex(start, nodes, nodeCount);
+
+        if (startIndex == -1)
+        {
+            return;
+        }
+
+        nodes[startIndex].distance = 0;
+
+        for (int i = 0; i < nodeCount; ++i)
+        {
+            int minDist = INF, u = -1;
+
+            for (int j = 0; j < nodeCount; ++j)
+            {
+                if (!nodes[j].visited && nodes[j].distance < minDist)
+                {
+                    minDist = nodes[j].distance;
+                    u = j;
+                }
+            }
+
+            if (u == -1)
+                break;
+
+            nodes[u].visited = true;
+
+            IntersectionNode *node = findIntersection(nodes[u].name);
+            EdgeNode *edge = node->edgeList;
+
+            while (edge)
+            {
+                if (isRoadBlocked(nodes[u].name, edge->destination))
+                {
+                    edge = edge->next;
+                    continue;
+                }
+
+                int neighborIndex = getIndex(edge->destination, nodes, nodeCount);
+                if (!nodes[neighborIndex].visited)
+                {
+                    int newDist = nodes[u].distance + edge->travelTime;
+                    if (newDist < nodes[neighborIndex].distance)
+                    {
+                        nodes[neighborIndex].distance = newDist;
+                        nodes[neighborIndex].parent = nodes[u].name;
+                    }
+                }
+                edge = edge->next;
+            }
+        }
+
+        int endIndex = getIndex(end, nodes, nodeCount);
+
+        if (endIndex == -1 || nodes[endIndex].distance == INF)
+        {
+        }
+        else
+        {
+            string path[26];
+            int pathIndex = 0;
+
+            string currentNode = end;
+
+            while (currentNode != start)
+            {
+                path[pathIndex++] = currentNode;
+                currentNode = nodes[getIndex(currentNode, nodes, nodeCount)].parent;
+            }
+            path[pathIndex++] = start;
+
+            for (int i = pathIndex - 1; i >= 0; --i)
+            {
+                if (inp)
+                {
+                    h.insertRoad(path[i], path[i - 1]);
+                    h.incrementVehicleCount(path[i], path[i - 1]);
+                    if(h.getCount(path[i], path[i - 1]) >= 5)
+                    {
+                       BFS(start, end);
+                    }
+                }
+                else
+                {
+                    h.insertRoad(path[i], path[i - 1]);
+                    h.decrementVehicleCount(path[i], path[i - 1]);
+                }
+            }
+        }
+    }
 };
 
 int main() {
