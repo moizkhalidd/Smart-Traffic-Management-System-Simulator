@@ -141,8 +141,10 @@ public:
 };
 class TrafficGraph 
 {
-    IntersectionNode* head;
-    BlockedRoad* blockedRoads;
+    IntersectionNode *head;
+    BlockedRoad *blockedRoads;
+    TrafficSignalManager manager;
+    MinHeap heap;
 
     IntersectionNode* findIntersection(string name) 
     {
@@ -218,7 +220,11 @@ class TrafficGraph
 public:
 
      
-    TrafficGraph() : head(nullptr) , blockedRoads(nullptr){}
+    TrafficGraph() : head(nullptr), blockedRoads(nullptr) 
+    {
+      manager.parseTrafficSignals("traffic_signals.csv");
+      emergencyCSV("emergency_vehicles.csv");
+    }
 
 
     ~TrafficGraph() 
