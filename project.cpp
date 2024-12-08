@@ -61,6 +61,26 @@ struct BlockedRoad
       status = stat;
     }
 };
+struct HeapNode {
+        string id;
+        string start;
+        string end;
+        int priority;
+
+        HeapNode(string name, string s, string e, string p) : id(name),start(s),end(e) 
+        {
+          if(p == "High")
+          {
+            priority = 1;
+          }
+          else if(p == "Medium")
+          {
+            priority = 2;
+          }
+          else
+          priority = 3;
+        }
+};
 class TrafficGraph 
 {
     IntersectionNode* head;
