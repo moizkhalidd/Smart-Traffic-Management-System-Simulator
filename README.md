@@ -80,5 +80,21 @@ The **Traffic Management System** provides a comprehensive solution for optimizi
 
 ## Display Blocked Roads
 
+![image](https://github.com/user-attachments/assets/99696717-7271-4716-8cb8-4fd8811b2504)
+
+## Emergency Vehicle Handling
+
+![image](https://github.com/user-attachments/assets/0355a6f7-3df5-4cbd-951f-00c551bfbb71)
+
+![image](https://github.com/user-attachments/assets/a979a0df-36f6-4f4a-9327-500533bcf406)
+
+## Block Roads
+
+![image](https://github.com/user-attachments/assets/9fb23a3f-c8b9-49ca-90a2-c70907d03bb3)
+
+**Displaying block roads**
+
+![image](https://github.com/user-attachments/assets/30ca2793-4f22-4027-b9b5-c9e2b21f56d2)
+
 
 
